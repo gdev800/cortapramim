@@ -14,7 +14,7 @@ Falta o **extrato** (o que entrou e saiu, quando e em qual projeto). O relatóri
 
 ---
 
-## Parte 1 — Estoque de chapas inteiras (fase 13)  [ ]
+## Parte 1 — Estoque de chapas inteiras (fase 13)  [x]
 **Objetivo:** cadastrar chapas novas por material, espessura e tamanho, e o plano usar isso.
 - `src/domain/supplies.js`: novo tipo de insumo `chapa` com `{ id, tipo:'chapa', nome, esp, c, l, q }`
   (`insumoValido` aceita o tipo novo; `adicionarInsumo` soma quando nome+esp+tamanho batem).
@@ -136,7 +136,7 @@ Alternativa considerada: Firebase (bom, mas banco de documentos deixa relatório
 ## Andamento
 | Parte | Estado | Commit |
 |---|---|---|
-| 1 Estoque de chapas | a fazer | |
+| 1 Estoque de chapas | feito | (ver git log) |
 | 2 Histórico | a fazer | |
 | 3 Relatório mensal | a fazer | |
 | 4 Estoque mínimo | a fazer | |

@@ -36,7 +36,7 @@ export default {
       res.groups.forEach((g) => {
         let ap = 0, as = 0; g.sheets.forEach((s) => { ap += s.area; as += s.cfg.SW * s.cfg.SH; });
         const comprar = Math.max(0, g.nNovas - (g.estoque || 0));
-        sh += '<tr><td class="n">' + esc(g.mat) + '</td><td>' + (g.esp ? g.esp + ' mm' : '—') + '</td><td>' + fu(g.cfg.SW + 2 * (g.cfg.ref || 0)) + ' × ' + fu(g.cfg.SH + 2 * (g.cfg.ref || 0)) + '</td><td>' + (g.veio ? 'sim' : 'não') + '</td><td>' + g.nNovas + '</td><td>' + g.nSobras + '</td><td>' + (g.estoque || '—') + '</td><td><b>' + comprar + '</b></td><td>' + pct(ap / as) + '%</td></tr>';
+        sh += '<tr><td class="n">' + esc(g.mat) + '</td><td>' + (g.esp ? g.esp + ' mm' : '—') + '</td><td>' + fu(g.cfg.SW + 2 * (g.cfg.ref || 0)) + ' × ' + fu(g.cfg.SH + 2 * (g.cfg.ref || 0)) + '</td><td>' + (g.veio ? 'sim' : 'não') + '</td><td>' + g.nNovas + '</td><td>' + g.nSobras + '</td><td>' + (g.estoque || '—') + (g.estoqueAuto ? ' <span class="hint">do estoque</span>' : '') + '</td><td><b>' + comprar + '</b></td><td>' + pct(ap / as) + '%</td></tr>';
       });
       sh += '</tbody></table></div>';
       $('shop').innerHTML = '<div class="label" style="margin-bottom:6px">Lista de compras</div>' + sh;

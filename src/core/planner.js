@@ -107,7 +107,7 @@ export async function planejar(cfg, groups, totalMs, tick) {
         sheet.n = no; sheet.mat = g.nome; sheet.esp = g.esp; sheet.cfg = e.cfg; sheet.sobra = e.sobra;
         sheets.push(sheet);
       }
-      out.push({ mat: g.nome, esp: g.esp, veio: !g.rot, nPecas: g.pieces.length, sheets: sheets, cfg: g.cfg, estoque: g.estoque, preco: g.preco, fitaPreco: g.fitaPreco || 0, fitaNome: g.fitaNome || '',
+      out.push({ mat: g.nome, esp: g.esp, veio: !g.rot, nPecas: g.pieces.length, sheets: sheets, cfg: g.cfg, estoque: g.estoque, estoqueAuto: !!g.estoqueAuto, preco: g.preco, fitaPreco: g.fitaPreco || 0, fitaNome: g.fitaNome || '',
         nNovas: 0, nSobras: 0, minNovas: minimoChapas(g, g.cfg.SW, g.cfg.SH), areaNovas: areaEmChapas(g, g.cfg.SW, g.cfg.SH) });
     }
     // Peças das últimas chapas que cabem em espaço livre das primeiras sobem para elas.

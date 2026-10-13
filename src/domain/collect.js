@@ -2,6 +2,7 @@
 import { parseLista } from '../core/index.js';
 import { fac, pIn } from './units.js';
 import { sobrasDoBloco } from './scraps.js';
+import { chapaDoEstoque } from './supplies.js';
 
 export const MAX_POR_LINHA = 999;
 export const MAX_TOTAL = 1500;
@@ -64,11 +65,30 @@ export function coletar(state) {
     metas.push({ origem: b.origem || '', chave: [nome.toLowerCase(), pIn(b.esp), sw, sh, b.veio ? 1 : 0].join('|') });
     groups.push({
       nome, esp: pIn(b.esp) > 0 ? pIn(b.esp) : 0, SW: Math.round(sw * 100) / 100, SH: Math.round(sh * 100) / 100, rot: !b.veio,
-      estoque: est > 0 ? est : 0, preco: pr > 0 ? pr : 0, fitaPreco: ft > 0 ? ft : 0, fitaNome: (b.fitaNome || '').trim(), pieces,
+      estoque: est > 0 ? est : 0, estoqueDigitado: String(b.estoque || '').trim() !== '', preco: pr > 0 ? pr : 0, fitaPreco: ft > 0 ? ft : 0, fitaNome: (b.fitaNome || '').trim(), pieces,
       sobras: sobrasDoBloco(state, b).map((s) => ({ id: s.id, c: s.c, l: s.l, nome: s.nome })),
     });
   });
-  return { groups: juntarIguais(groups, metas), erros, avisos };
+  return { groups: estoqueDeChapas(state, juntarIguais(groups, metas)), erros, avisos };
+}
+
+/**
+ * "Chapas novas que tenho" vazio: usa o estoque de chapas inteiras cadastrado (mesmo material, espessura e tamanho).
+ * O que foi digitado continua valendo. Dois grupos do mesmo material dividem o estoque (o primeiro pega primeiro).
+ */
+function estoqueDeChapas(state, groups) {
+  const usado = new Map();
+  groups.forEach((g) => {
+    if (g.estoqueDigitado) { delete g.estoqueDigitado; return; }
+    delete g.estoqueDigitado;
+    const s = chapaDoEstoque(state, { nome: g.nome, esp: g.esp, SW: g.SW, SH: g.SH });
+    if (!s) return;
+    const livre = Math.max(0, Math.floor(s.q) - (usado.get(s.id) || 0));
+    if (!livre) return;
+    g.estoque = livre; g.estoqueAuto = true;
+    usado.set(s.id, (usado.get(s.id) || 0) + livre);
+  });
+  return groups;
 }
 
 /** Chapas de projetos juntados (b.origem) com o mesmo nome, espessura, tamanho e veio viram uma só: as peças dividem as mesmas chapas. */
@@ -81,6 +101,7 @@ function juntarIguais(groups, metas) {
     if (!alvo) { vistos[m.chave] = g; out.push(g); return; }
     alvo.pieces = alvo.pieces.concat(g.pieces);
     alvo.estoque = Math.max(alvo.estoque, g.estoque);
+    alvo.estoqueDigitado = alvo.estoqueDigitado || g.estoqueDigitado;
     // preço e fita: vale o primeiro informado
     ['preco', 'fitaPreco', 'fitaNome'].forEach((k) => { if (!alvo[k]) alvo[k] = g[k]; });
     g.sobras.forEach((s) => { if (!alvo.sobras.some((x) => x.id === s.id)) alvo.sobras.push(s); });
