@@ -1,5 +1,6 @@
 // PDF do plano de corte: resumo, compras, custos, uma página por chapa e o estoque de sobras.
 import { sheetSVG, PAL_EXPORT } from '../../core/index.js';
+import { RETALHO_MIN_LISTA } from '../../core/constants.js';
 import { fmtFor, money, toStr, pct } from '../../domain/units.js';
 import { custos } from '../../domain/costs.js';
 import { relatorioPlano, linhasRelatorio, linhasRelatorioMat, linhasPorProjeto, CAB_RELAT_MAT, CAB_RELAT_PROJ } from '../../domain/report.js';
@@ -57,7 +58,7 @@ export async function gerarPdfPlano(state) {
     for (const s of g.sheets) {
       doc.addPage();
       let yy = pdfTitulo(doc, 'Chapa ' + s.n + ' de ' + total, g.mat + (g.esp ? ' · ' + g.esp + ' mm' : '') + (s.sobra ? ' · sobra do estoque' : '') + (g.veio ? ' · com veio' : ''));
-      const r = sheetSVG(s, PAL_EXPORT, { fu, un, header: false, numbers: true }, total);
+      const r = sheetSVG(s, PAL_EXPORT, { fu, un, header: false, numbers: true, sobras: true }, total);
       const cv = await svgToCanvas(r, 1800); const w = PW - 2 * PM, h = w * r.h / r.w;
       doc.addImage(cv.toDataURL('image/png'), 'PNG', PM, yy, w, h); yy += h + 6;
       doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(29, 25, 20);
@@ -66,6 +67,13 @@ export async function gerarPdfPlano(state) {
       const temF = s.pecas.some((q) => q.cf), temP = s.pecas.some((q) => q.proj);
       yy = pdfTabela(doc, yy, ['#', 'Nome', 'C', 'L', 'X', 'Y', 'Giro', 'Fita C/L'].concat(temF ? ['Final C x L'] : []).concat(temP ? ['Projeto'] : []), s.pecas.slice().sort((a, b) => a.id - b.id).map((q) =>
         [q.id, q.nome || '-', fu(q.c), fu(q.l), fu(q.x), fu(q.y), q.girada ? 'sim' : '', (q.fc || q.fl) ? (q.fc || 0) + '/' + (q.fl || 0) : ''].concat(temF ? [q.cf ? fu(q.cf) + ' x ' + fu(q.lf) : ''] : []).concat(temP ? [q.proj || ''] : [])));
+      const sob = s.restos.map((rr, i) => [rr, i]).filter(([rr]) => Math.min(rr.w, rr.h) >= RETALHO_MIN_LISTA);
+      if (sob.length) {
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(29, 25, 20);
+        if (yy > 250) { doc.addPage(); yy = 20; }
+        doc.text('Sobras desta chapa', PM, yy + 8);
+        yy = pdfTabela(doc, yy + 10, ['#', 'C', 'L', 'X', 'Y', 'Guardar?'], sob.map(([rr, i]) => ['R' + (i + 1), fu(rr.w), fu(rr.h), fu(rr.x), fu(rr.y), rr.util ? 'sim' : 'pequena']));
+      }
       doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(29, 25, 20);
       if (yy > 250) { doc.addPage(); yy = 20; }
       doc.text('Sequência de cortes', PM, yy + 8);

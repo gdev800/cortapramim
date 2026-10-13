@@ -9,8 +9,21 @@ export function sheetSVG(sh, pal, opts, totalChapas) {
   const cfg = sh.cfg, SW = cfg.SW, SH = cfg.SH, fu = opts.fu, un = opts.un;
   const ref = cfg.ref || 0, FW = SW + 2 * ref, FH = SH + 2 * ref;
   const m = Math.round(SW * 0.04), hdr = opts.header ? Math.round(SW * 0.075) : 0;
-  const vx = -m - ref, vy = -m - ref - hdr, vw = FW + 2 * m, vh = FH + 2 * m + hdr;
   const fs = SW / 72, lw = SW / 1300, hp = SW / 90;
+  // opts.sobras (imagens e PDF para baixar): todas as sobras numeradas na chapa e uma legenda embaixo com as medidas.
+  const lista = [];
+  if (opts.sobras) sh.restos.forEach(function (r, ri) { if (Math.min(r.w, r.h) >= RETALHO_MIN_LISTA) lista.push({ r: r, ri: ri }); });
+  const lfs = fs * 0.95, lin = [];
+  if (lista.length) {
+    const cabe = Math.floor(FW / (lfs * 0.62)); let cur = 'Sobras (' + un + '):';
+    lista.forEach(function (o) {
+      const t = 'R' + (o.ri + 1) + ' ' + fu(o.r.w) + '×' + fu(o.r.h) + (o.r.util ? ' ✓' : '');
+      if ((cur + ' · ' + t).length > cabe) { lin.push(cur); cur = t; } else cur += (cur.endsWith(':') ? ' ' : ' · ') + t;
+    });
+    lin.push(cur); lin.push('✓ = dá para guardar como sobra (lado mínimo ' + fu(cfg.minRet || 0) + ' ' + un + ')');
+  }
+  const leg = lin.length ? Math.round(lin.length * lfs * 1.55 + lfs * 0.6) : 0;
+  const vx = -m - ref, vy = -m - ref - hdr, vw = FW + 2 * m, vh = FH + 2 * m + hdr + leg;
   let s = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + vx + ' ' + vy + ' ' + vw + ' ' + vh + '"';
   if (opts.px) s += ' width="' + opts.px + '" height="' + Math.round(opts.px * vh / vw) + '"';
   s += ' role="img" aria-label="Chapa ' + sh.n + ' com ' + sh.pecas.length + ' peças e ' + sh.nCortes + ' cortes" font-family="ui-monospace, Menlo, Consolas, monospace">';
@@ -39,7 +52,7 @@ export function sheetSVG(sh, pal, opts, totalChapas) {
   }
   // opts.todos (tela ampliada): mostra todos os retalhos, não só os acima do mínimo útil. Sem ela o desenho é o de sempre.
   sh.restos.forEach(function (r, ri) {
-    if (!opts.todos ? !r.util : Math.min(r.w, r.h) < RETALHO_MIN_LISTA) return;
+    if (!(opts.todos || opts.sobras) ? !r.util : Math.min(r.w, r.h) < RETALHO_MIN_LISTA) return;
     const marca = opts.todos ? ' data-resto="' + ri + '"' : '', sel = !!opts.todos && opts.destaque === ri;
     s += '<rect' + marca + ' x="' + r.x + '" y="' + r.y + '" width="' + r.w + '" height="' + r.h + '" style="fill:url(#hat' + sh.n + ');stroke:' + (sel ? '#b0702a' : pal.dim) + ';stroke-width:' + (sel ? lw * 5 : lw) + ';stroke-dasharray:' + (sel ? 'none' : (hp * 1.2) + ' ' + (hp * 0.8)) + (opts.todos ? ';cursor:pointer' : '') + '"/>';
   });
@@ -62,7 +75,23 @@ export function sheetSVG(sh, pal, opts, totalChapas) {
       if (size >= SW / 260) s += '<text x="' + (q.x + q.w / 2) + '" y="' + (q.y + q.h / 2 + size * 0.34) + '" font-size="' + size + '" text-anchor="middle" style="fill:' + pal.text + '">' + dims + '</text>';
     }
   });
-  sh.restos.forEach(function (r, ri) {
+  if (opts.sobras) lista.forEach(function (o) {
+    // medida dentro da sobra (deitada se for tira em pé); se não couber legível, só o número; a medida está na legenda
+    const r = o.r, cx = r.x + r.w / 2, cy = r.y + r.h / 2, vert = r.h > r.w * 1.2, aw = vert ? r.h : r.w, ah = vert ? r.w : r.h;
+    const tam = function (lab) { return Math.min(SW / 55, ah / 2.2, aw / (lab.length * 0.62 + 0.6)); };
+    let lab = 'R' + (o.ri + 1) + ' ' + fu(r.w) + '×' + fu(r.h), size = tam(lab);
+    if (size < SW / 150) { lab = 'R' + (o.ri + 1); size = tam(lab); }
+    if (size < SW / 260) return;
+    s += '<text' + (vert ? ' transform="rotate(-90 ' + cx + ' ' + cy + ')"' : '') + ' x="' + cx + '" y="' + (cy + size * 0.34) + '" font-size="' + size + '"' + (r.util ? ' font-weight="700"' : '') + ' text-anchor="middle" style="fill:' + pal.text + ';paint-order:stroke;stroke:' + pal.halo + ';stroke-width:' + (size * 0.3) + 'px">' + lab + '</text>';
+  });
+  if (lin.length) {
+    const y0 = SH + ref + m + lfs * 0.9;
+    lin.forEach(function (t, i) {
+      const ult = i === lin.length - 1;
+      s += '<text x="' + (-ref) + '" y="' + (y0 + i * lfs * 1.55) + '" font-size="' + (ult ? lfs * 0.85 : lfs) + '"' + (i === 0 ? '' : '') + ' style="fill:' + (ult ? pal.dim : pal.text) + '">' + esc(t) + '</text>';
+    });
+  }
+  if (!opts.sobras) sh.restos.forEach(function (r, ri) {
     if (!opts.todos ? !r.util : Math.min(r.w, r.h) < RETALHO_MIN_LISTA) return;
     const lab = (opts.todos ? 'R' + (ri + 1) + ' ' : 'retalho ') + fu(r.w) + '×' + fu(r.h);
     const vert = !!opts.todos && r.h > r.w * 1.4, aw = vert ? r.h : r.w, ah = vert ? r.w : r.h; // tira em pé: texto deitado

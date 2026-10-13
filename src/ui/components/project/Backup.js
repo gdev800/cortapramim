@@ -2,6 +2,7 @@
 import html from './backup.html';
 import { montarPacote, nomeArquivoBackup, lerPacote, projetosParaImportar, sobrasParaImportar, insumosParaImportar } from '../../../domain/backup.js';
 import { $ } from '../../dom.js';
+import { baixarNoNavegador, emQuadro } from '../../deliver.js';
 
 export default {
   template: () => html,
@@ -24,7 +25,10 @@ export default {
         } catch (e) { slot.textContent = e && e.code === 'declined' ? 'Download cancelado.' : 'Não consegui baixar aqui. Tente de novo.'; }
         return;
       }
-      slot.innerHTML = '<p class="hint" style="margin-bottom:8px">O download direto não está disponível aqui. Copie o texto abaixo e salve em um arquivo .json.</p>';
+      baixarNoNavegador(nomeArquivoBackup(), txt); pers.marcarBackup(); renderEstado();
+      slot.textContent = 'Backup baixado: ' + pacote.projetos.length + ' projeto(s) e ' + state.estoque.length + ' sobra(s).';
+      if (!emQuadro()) return;
+      slot.innerHTML = '<p class="hint" style="margin-bottom:8px">Se o arquivo não baixou, copie o texto abaixo e salve em um arquivo .json.</p>';
       const ta = document.createElement('textarea'); ta.className = 'csv-box'; ta.readOnly = true; ta.value = txt; slot.appendChild(ta); ta.focus(); ta.select();
     }
 

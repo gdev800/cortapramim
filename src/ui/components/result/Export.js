@@ -9,7 +9,7 @@ import { svgToPngBlob } from '../../../infra/raster.js';
 import { pdfOk } from '../../../infra/pdf/lib.js';
 import { gerarPdfPlano } from '../../../infra/pdf/plan.js';
 import { gerarPdfEtiquetas } from '../../../infra/pdf/labels.js';
-import { entregar, entregarPdf, MSG_PDF_INDISPONIVEL } from '../../deliver.js';
+import { entregar, entregarPdf, emQuadro, MSG_PDF_INDISPONIVEL } from '../../deliver.js';
 import { $, esc } from '../../dom.js';
 
 const SLOT = '<div class="slot" style="flex-basis:100%"></div>';
@@ -35,7 +35,7 @@ export default {
         '<div class="exp-row"><span>Relatório de aproveitamento (CSV)</span><button type="button" data-exp="relat">Baixar</button>' + SLOT + '</div>' +
         '<div class="exp-row"><span>' + (state.estAtual ? 'Estoque de sobras atualizado.' : 'Estoque de sobras: ' + pe.usados.length + ' usada(s) saem, ' + pe.novos.length + ' retalho(s) novo(s) entram.') + '</span>' +
         (state.estAtual ? '' : '<button type="button" class="primary" id="btnEstoque">Atualizar estoque</button>') + '</div></div>' +
-        (state.dl ? '' : '<p class="hint">O download direto não está disponível aqui. Os botões mostram a imagem ou o texto para você salvar.</p>');
+        (state.dl || !emQuadro() ? '' : '<p class="hint">Se o download for bloqueado nesta visualização, os botões mostram a imagem, o texto ou um link para abrir o arquivo.</p>');
       box.innerHTML = h;
     }
 
@@ -54,7 +54,7 @@ export default {
         let sh = null, g0 = null;
         state.res.groups.forEach((g) => g.sheets.forEach((s) => { if (s.n === parseInt(bt.dataset.n, 10)) { sh = s; g0 = g; } }));
         slot.textContent = 'Gerando imagem…';
-        const r = sheetSVG(sh, PAL_EXPORT, { fu, un: state.unit, header: true, numbers: true, px: 2400 }, total);
+        const r = sheetSVG(sh, PAL_EXPORT, { fu, un: state.unit, header: true, numbers: true, sobras: true, px: 2400 }, total);
         await entregar(state, 'chapa-' + sh.n + '-' + slug(g0.mat) + '.png', await svgToPngBlob(r, 2400), slot, null);
       } else if (kind === 'pdf') {
         slot.textContent = 'Montando o relatório…';
