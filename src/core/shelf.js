@@ -67,3 +67,29 @@ export function melhorParticao(pieces, cfg, rnd) {
   }
   return best ? best.specs : null;
 }
+
+// Várias partições boas e diferentes entre si (para as tentativas do planner). A primeira é a mesma de melhorParticao.
+// Ordem: menos chapas; empatando, sobra mais concentrada. Duas partições são iguais se cada chapa tem as mesmas peças.
+export function particoes(pieces, cfg, rnd, k) {
+  const vistas = new Map(); const A = cfg.SW * cfg.SH;
+  const tries = pieces.length > 120 ? 80 : 300;
+  for (let t = 0; t < tries; t++) {
+    ['r', 'c'].forEach(function (mode) {
+      const sheets = shelfPack(pieces, mode, t, rnd, cfg);
+      if (!sheets) return;
+      let conc = 0; const specs = [], assin = [];
+      sheets.forEach(function (sh) {
+        const sp = initSheet(sh, mode); let ar = 0;
+        sp.items.forEach(function (it) { ar += it.p.c * it.p.l; });
+        const free = (A - ar) / A; conc += free * free;
+        specs.push(sp); assin.push(sp.items.map(function (it) { return it.p.id; }).sort(function (a, b) { return a - b; }).join(','));
+      });
+      const chave = assin.sort().join('|');
+      const velho = vistas.get(chave);
+      if (!velho || conc > velho.conc) vistas.set(chave, { specs: specs, conc: conc });
+    });
+  }
+  return Array.from(vistas.values())
+    .sort(function (a, b) { return (a.specs.length - b.specs.length) || (b.conc - a.conc); })
+    .slice(0, k).map(function (x) { return x.specs; });
+}

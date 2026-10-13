@@ -60,9 +60,9 @@ export default {
       $('btnCalc').disabled = true; $('btnCancel').hidden = false; $('prog').hidden = false; setProg(0, 'Preparando…');
       ctx.msg(col.avisos.join(' '), col.avisos.length ? 'warn' : '');
       try {
-        const res = await planejar(cfg, col.groups, total, async (f, cur, n) => {
+        const res = await planejar(cfg, col.groups, total, async (f, cur, n, etapa) => {
           if (state.cancel) throw new Error('cancelado');
-          setProg(f, 'Otimizando chapa ' + cur + ' de ' + n + '…');
+          setProg(f, etapa || ('Otimizando chapa ' + cur + ' de ' + n + '…'));
           await new Promise((r) => setTimeout(r, 0));
         });
         state.res = res; state.cfgUsed = cfg; state.hist = [];

@@ -2,8 +2,14 @@
 import { custos } from '../../../domain/costs.js';
 import { money, toStr, pct } from '../../../domain/units.js';
 import { economiaSobras } from '../../../domain/scraps.js';
+import { resumoMinimo } from '../../../domain/minimum.js';
 import { relatorioPlano, linhasRelatorio, linhasRelatorioMat, linhasPorProjeto, CAB_RELAT_MAT, CAB_RELAT_PROJ } from '../../../domain/report.js';
 import { $, esc } from '../../dom.js';
+
+function notaMinimo(res) {
+  const m = resumoMinimo(res);
+  return m ? '<small class="nota-min' + (m.noMinimo ? ' ok' : '') + '" id="notaMin">' + esc(m.texto) + '</small>' : '';
+}
 
 export default {
   mount(ctx) {
@@ -17,7 +23,7 @@ export default {
         g.sheets.forEach((s) => { areaP += s.area; areaS += s.cfg.SW * s.cfg.SH; if (s.maiorRetalho && (!maior || s.maiorRetalho.w * s.maiorRetalho.h > maior.w * maior.h)) maior = s.maiorRetalho; });
       });
       const c = custos(res, state.ferr, state.orc);
-      let t = '<div class="tile main"><b>' + (nCh - nSob) + '</b><span>' + ((nCh - nSob) === 1 ? 'chapa nova' : 'chapas novas') + (nSob ? ' + ' + nSob + (nSob === 1 ? ' sobra' : ' sobras') : '') + '</span></div>' +
+      let t = '<div class="tile main"><b>' + (nCh - nSob) + '</b><span>' + ((nCh - nSob) === 1 ? 'chapa nova' : 'chapas novas') + (nSob ? ' + ' + nSob + (nSob === 1 ? ' sobra' : ' sobras') : '') + '</span>' + notaMinimo(res) + '</div>' +
         '<div class="tile"><b>' + (areaS ? pct(areaP / areaS) : '0') + '%</b><span>aproveitamento</span></div>' +
         '<div class="tile"><b>' + (maior ? fu(maior.w) + '×' + fu(maior.h) : '—') + '</b><span>' + (maior ? 'maior retalho (' + un + ')' : 'sem retalho útil') + '</span></div>' +
         '<div class="tile"><b>' + nPecas + '</b><span>peças</span></div>';

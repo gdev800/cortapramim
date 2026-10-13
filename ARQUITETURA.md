@@ -16,6 +16,26 @@ Analogia: `core` é o motor do carro, `domain` o painel de regras (pode ou não 
 - **infra**: `persistence` (conta na nuvem ou navegador), `pdf/*`, `xlsx`, `raster`.
 - **ui**: `context` (estado, barramento, serviços), `app` (monta a página), `components/*`.
 
+## Motor de corte (core), em etapas
+
+1. **Sobras do estoque** (`scrap.js`): as maiores primeiro, cheias com o que couber.
+2. **Partição** (`shelf.js`): divide as peças restantes em chapas por prateleiras. `particoes()` devolve algumas divisões diferentes.
+3. **Otimização de cada chapa** (`anneal.js`): têmpera simulada sobre a árvore de cortes (guilhotina). Movimentos: trocar peças,
+   inverter direção, girar, reagrupar uma cadeia de cortes (`reagrupar`) e levar uma peça para outro lugar (`realocar`).
+4. **Consolidação** (`consolidate.js`): peças das últimas chapas sobem para as primeiras.
+5. **Absorção** (`absorb.js`): se a chapa menos usada ficou abaixo de 40%, tenta passar as peças dela para as outras, rearrumando-as.
+
+Opções em `cfg` (todas ligadas por padrão; `false` volta ao jeito antigo):
+
+| Opção | O que faz |
+|---|---|
+| `sobraUnica` | retalho partido vale menos que o mesmo espaço num pedaço só; com fases limitadas, conta a sobra tira por tira, igual à montagem |
+| `tentativas` | com 2+ chapas novas, roda até 4 tentativas curtas e fica com a de menos chapas (empate: sobra mais concentrada) |
+| `consolidar` | etapa 4 |
+| `absorver` | etapa 5 (segue `consolidar` se não vier explícito) |
+
+Cada material no resultado traz `minNovas` (mínimo de chapas novas só pela área) e `areaNovas` (área das peças em chapas, ex.: 2,97).
+
 ## Componentes
 
 Cada componente exporta `{ template(ctx), mount(ctx) }`:
