@@ -1,0 +1,46 @@
+/* Cores, fontes e sombras. Para mudar o visual do app inteiro, comece por aqui. Tema escuro incluso. */
+:root {
+  --bg: #f2f1ee;
+  --surface: #ffffff;
+  --field: #f4f2ef;
+  --fg: #1d1914;
+  --muted: #6d655b;
+  --line: #e4e0d9;
+  --btn: #1d1914;
+  --btn-fg: #ffffff;
+  --brass: #b0702a;
+  --brass-fg: #ffffff;
+  --brass-soft: #f5e6d1;
+  --piece: #ecd3a8;
+  --piece-line: #8a5827;
+  --scrap: #e2dacd;
+  --ink: #2a2118;
+  --cut: #c9372c;
+  --draw: #fbfaf7;
+  --ok: #1b7a49;
+  --warn: #99580a;
+  --err: #b3261e;
+  --glass: rgba(242, 241, 238, 0.8);
+  --shadow: 0 1px 2px rgba(40, 28, 16, 0.05), 0 8px 28px rgba(40, 28, 16, 0.06);
+  --f-display: 'Bricolage Grotesque', 'Avenir Next Condensed', 'Arial Narrow', system-ui, sans-serif;
+  --f-body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f0c0a; --surface: #1a1511; --field: #241d17; --fg: #f4eee7; --muted: #a99d90; --line: #33291f;
+    --btn: #f4eee7; --btn-fg: #1a1511; --brass: #e1a05a; --brass-fg: #1a1511; --brass-soft: #3a2a18;
+    --piece: #6a4a28; --piece-line: #e2b67e; --scrap: #2b231b; --ink: #cdbfae; --cut: #ff6f5f; --draw: #14100d;
+    --ok: #55c58a; --warn: #e5a042; --err: #ff8a80; --glass: rgba(15, 12, 10, 0.8);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f0c0a; --surface: #1a1511; --field: #241d17; --fg: #f4eee7; --muted: #a99d90; --line: #33291f;
+  --btn: #f4eee7; --btn-fg: #1a1511; --brass: #e1a05a; --brass-fg: #1a1511; --brass-soft: #3a2a18;
+  --piece: #6a4a28; --piece-line: #e2b67e; --scrap: #2b231b; --ink: #cdbfae; --cut: #ff6f5f; --draw: #14100d;
+  --ok: #55c58a; --warn: #e5a042; --err: #ff8a80; --glass: rgba(15, 12, 10, 0.8);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}

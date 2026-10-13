@@ -1,0 +1,19 @@
+    <details class="adj"><summary><span>Proposta para o cliente (PDF)</span></summary>
+      <div id="propBox" style="margin-top:14px;display:flex;flex-direction:column;gap:12px">
+        <div class="grid">
+          <div class="field"><label>Sua marcenaria</label><input data-p="marcenaria" placeholder="Nome da empresa"></div>
+          <div class="field"><label>Telefone ou e-mail</label><input data-p="contato" placeholder="Contato"></div>
+          <div class="field"><label>Cliente</label><input data-p="cliente" placeholder="Nome do cliente"></div>
+          <div class="field"><label>Valor total (R$)</label><input data-p="valor" inputmode="decimal" placeholder="Vazio = usa o preço de venda do plano"></div>
+        </div>
+        <div class="field"><label>Descrição do serviço</label><textarea class="sm" data-p="servico" placeholder="Ex.: Guarda-roupa de 3 portas, MDF branco, com instalação"></textarea></div>
+        <div class="field"><label>Itens incluídos (um por linha)</label><textarea class="sm" data-p="itens" placeholder="Corpo e portas em MDF 15 mm&#10;Dobradiças com amortecedor&#10;Montagem no local"></textarea></div>
+        <div class="grid">
+          <div class="field"><label>Pagamento</label><input data-p="pagamento" placeholder="Ex.: 50% na entrada e 50% na entrega"></div>
+          <div class="field"><label>Prazo de entrega</label><input data-p="prazo" placeholder="Ex.: 30 dias úteis"></div>
+          <div class="field"><label>Validade (dias)</label><input data-p="validade" inputmode="numeric" value="15"></div>
+        </div>
+        <label class="check"><input data-p="mostrarMat" type="checkbox" checked> Mostrar a tabela de materiais</label>
+        <div class="row"><button id="btnProposta" class="brass" type="button">Baixar proposta em PDF</button><span id="propMsg" class="hint"></span></div>
+      </div>
+    </details>

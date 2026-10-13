@@ -1,0 +1,4 @@
+/* Estrutura da página. */
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; padding-block: 0 110px; display: flex; flex-direction: column; gap: 28px; }
+
+footer.foot { color: var(--muted); font-size: 0.84rem; text-align: center; padding-top: 20px; }

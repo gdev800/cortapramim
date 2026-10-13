@@ -1,0 +1,8 @@
+.bento { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.bento article { background: var(--surface); border-radius: 24px; padding: 22px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow); }
+.bento svg { width: 34px; height: 34px; color: var(--brass); }
+.bento h3 { font-size: 1.12rem; letter-spacing: -0.01em; font-weight: 700; }
+.bento p { color: var(--muted); font-size: 0.93rem; line-height: 1.45; }
+@media (max-width: 920px) { .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .bento { grid-template-columns: minmax(0, 1fr); } }
+

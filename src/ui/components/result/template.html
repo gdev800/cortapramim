@@ -1,0 +1,38 @@
+  <section id="resultado" hidden aria-labelledby="t-res">
+    <div class="sec-h" style="padding-top:28px">
+      <div class="eyebrow">Resultado</div>
+      <div class="row between"><h2 id="t-res">Seu plano de corte.</h2><a class="btnlink" href="#t-entrada">↑ Editar peças</a></div>
+    </div>
+    <div id="tiles" class="tiles"></div>
+    <div id="editBar" class="panel" hidden>
+      <div class="row between">
+        <div><b>Editar à mão</b><p class="hint">Em cada chapa, abra "Editar peças" para girar, trocar ou mover peças. Toda mudança é conferida (limites, sobreposição e fases) e pode ser desfeita.</p></div>
+        <div class="row"><button id="btnDesfazer" type="button" disabled>Desfazer</button><button id="btnConferir" type="button">Conferir plano</button></div>
+      </div>
+      <p id="editMsg" class="hint" role="status" aria-live="polite"></p>
+    </div>
+    <div id="sheets" style="display:flex;flex-direction:column;gap:18px"></div>
+    <div id="shop" class="shop"></div>
+    <div id="custos" class="shop" hidden></div>
+    <div id="relat" class="shop"></div>
+    <div id="insCompra" class="shop" hidden></div>
+    <div class="panel">
+      <div class="row between"><div><b>Comparar versões do plano</b><p class="hint">Veja se girar as peças ou ignorar as sobras economiza chapa.</p></div><button id="btnCmp" type="button">Comparar</button></div>
+      <div id="cmpOut" class="cmp-h"></div>
+    </div>
+    <div id="aprovarBox" class="approve">
+      <p id="aprovarTxt"></p>
+      <div class="row">
+        <button id="btnAprovar" class="primary big" type="button">Aprovar plano</button>
+        <button id="btnEditar" type="button" hidden>Voltar a editar</button>
+      </div>
+    </div>
+    <div id="exportBox" class="panel" hidden></div>
+    <dialog id="zoomDlg" class="zoom" aria-labelledby="zoomTitulo">
+      <div class="zoom-h"><h3 id="zoomTitulo"></h3>
+        <div class="row"><button id="zmMenos" type="button" aria-label="Diminuir">−</button><button id="zmMais" type="button" aria-label="Aumentar">+</button><button id="zmAjusta" type="button">Ajustar</button><button id="zmFecha" type="button" class="primary">Fechar</button></div>
+      </div>
+      <p id="zoomMsg" class="hint" role="status" aria-live="polite"></p>
+      <div class="zoom-b"><div id="zoomDraw" class="zoom-draw"></div><div id="zoomList" class="zoom-list"></div></div>
+    </dialog>
+  </section>

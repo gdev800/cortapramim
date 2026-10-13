@@ -1,0 +1,6 @@
+/* Listas com linhas (sobras, projetos, insumos). */
+.srow { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); padding: 12px 0; }
+.srow:last-child { border-bottom: 0; }
+.srow b { font-family: var(--f-mono); font-weight: 500; }
+.srow button { min-height: 36px; padding: 0 14px; font-size: 0.84rem; }
+

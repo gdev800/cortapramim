@@ -1,0 +1,11 @@
+  <section class="panel" aria-labelledby="t-ins">
+    <h2 id="t-ins">Fita e ferragens em estoque</h2>
+    <p class="hint">O plano compara com o que você tem e mostra o que falta comprar. Ao atualizar o estoque, o gasto é descontado.</p>
+    <div id="insList" style="margin-top:8px"></div>
+    <div class="grid" style="margin-top:12px">
+      <div class="field"><label for="insTipo">Tipo</label><select id="insTipo"><option value="fita">Fita de borda (metros)</option><option value="ferr">Ferragem (unidades)</option></select></div>
+      <div class="field" style="grid-column: span 2"><label for="insNome">Nome (igual ao usado no plano)</label><input id="insNome" placeholder="Ex.: Fita branca 22mm"></div>
+      <div class="field"><label for="insQ">Quantidade</label><input id="insQ" inputmode="decimal"></div>
+    </div>
+    <div class="row" style="margin-top:12px"><button id="btnIns" class="primary" type="button">Guardar no estoque</button><span id="insMsg" class="hint"></span></div>
+  </section>

@@ -1,0 +1,16 @@
+    <details class="adj">
+      <summary><span>Ajustes (serra, refilo, retalho, fita, fases, tempo)</span></summary>
+      <div class="grid" style="margin-top:14px">
+        <div class="field"><label for="ajK">Espessura da serra (mm)</label><input id="ajK" type="number" inputmode="decimal" min="0" step="any" value="3.2"></div>
+        <div class="field"><label for="ajRef">Refilo da chapa nova (mm por lado)</label><input id="ajRef" type="number" inputmode="decimal" min="0" step="any" value="0"><small>Faixa que se perde na borda. Sobras do estoque não levam refilo.</small></div>
+        <div class="field"><label for="ajMin">Retalho mínimo útil (mm)</label><input id="ajMin" type="number" inputmode="decimal" min="0" step="any" value="200"><small>Sobra menor que isso não conta como retalho.</small></div>
+        <div class="field"><label for="ajFita">Espessura da fita de borda (mm)</label><input id="ajFita" type="number" inputmode="decimal" min="0" max="5" step="any" value="0"><small>Se as medidas das peças são finais (já com a fita), o corte desconta essa espessura de cada lado com fita. 0 = desligado.</small></div>
+        <div class="field"><label for="ajFases">Fases de corte</label>
+          <select id="ajFases"><option value="0" selected>Livre (menos chapas)</option><option value="2">2 fases: tiras e depois cortes cruzados</option><option value="3">Até 3 fases</option></select>
+          <small>Cada fase é uma mudança de direção da serra (girar ou reposicionar a chapa). Menos fases deixam o corte mais simples, mas podem gastar mais chapa.</small></div>
+        <div class="field"><label for="ajTempo">Tempo de busca</label>
+          <select id="ajTempo"><option value="5">Rápido (5 s)</option><option value="15" selected>Normal (15 s)</option><option value="40">Caprichado (40 s)</option></select>
+        </div>
+      </div>
+      <label class="check" style="margin-top:14px"><input id="ajNum" type="checkbox" checked> Numerar os cortes no desenho</label>
+    </details>

@@ -1,0 +1,15 @@
+  <section class="panel" aria-labelledby="t-sobras">
+    <div class="row between"><h2 id="t-sobras">Minhas sobras</h2><button id="btnSobraPdf" type="button">Baixar estoque em PDF</button></div>
+    <div id="sobraList"></div>
+    <details class="adj"><summary><span>Cadastrar uma sobra</span></summary>
+      <div class="grid" style="margin-top:14px">
+        <div class="field" style="grid-column: span 2"><label for="sbNome">Marca e modelo</label><input id="sbNome" list="dlMarcas" placeholder="Igual ao nome da chapa"></div>
+        <div class="field"><label for="sbEsp">Espessura (mm)</label><input id="sbEsp" list="dlEsp" inputmode="decimal" value="15"></div>
+        <div class="field"><label for="sbC" id="sbCl">Comprimento</label><input id="sbC" inputmode="decimal"></div>
+        <div class="field"><label for="sbL" id="sbLl">Largura</label><input id="sbL" inputmode="decimal"></div>
+        <div class="field"><label for="sbQ">Quantidade</label><input id="sbQ" inputmode="numeric" value="1"></div>
+      </div>
+      <label class="check" style="margin-top:14px"><input id="sbVeio" type="checkbox" checked> Tem veio ou textura (C é o sentido do veio)</label>
+      <div class="row" style="margin-top:14px"><button id="btnSobra" class="primary" type="button">Guardar sobra</button><span id="sbMsg" class="hint"></span></div>
+    </details>
+  </section>
