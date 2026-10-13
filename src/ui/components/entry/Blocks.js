@@ -69,6 +69,7 @@ export default {
         '</div>' +
         '<label class="check"><input type="checkbox" data-k="veio"' + (b.veio ? ' checked' : '') + '> Chapa com veio ou textura (não gira as peças)</label>' +
         '<p class="hint" style="margin-top:-6px">' + (b.veio ? 'C de cada peça fica ao longo do comprimento da chapa, no sentido do veio. Em peças que podem girar, use o botão ⋯ da linha.' : 'Sem veio: o programa pode girar as peças 90° para aproveitar melhor.') + ' Confira o tamanho real com o fornecedor.</p>' +
+        (b.veio ? '<p class="msg warn veiowarn" role="status"><b>Com veio, o aproveitamento é menor.</b> As peças não giram e sobram mais retalhos. Marque só se a chapa tem ranhura ou textura que precisa seguir o mesmo sentido. Chapa lisa: desmarque.</p>' : '') +
         '<div class="sobslot">' + sobInfo(b) + '</div>' +
         '<details class="opt"><summary>Estoque e preço (opcional)</summary><div class="grid" style="margin-top:10px">' +
         '<div class="field"><label>Chapas novas que tenho</label><input data-k="estoque" inputmode="numeric" placeholder="Vazio = comprar tudo" value="' + esc(b.estoque) + '"></div>' +

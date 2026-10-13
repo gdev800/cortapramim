@@ -3,6 +3,7 @@ import { mulberry32 } from './rng.js';
 import { melhorParticao } from './shelf.js';
 import { otimizarChapa } from './sheet.js';
 import { encherSobra } from './scrap.js';
+import { consolidar } from './consolidate.js';
 
 export async function planejar(cfg, groups, totalMs, tick) {
   const rnd = mulberry32((Date.now() & 0xffffff) + 17);
@@ -43,6 +44,17 @@ export async function planejar(cfg, groups, totalMs, tick) {
     }
     out.push({ mat: g.nome, esp: g.esp, veio: !g.rot, nPecas: g.pieces.length, sheets: sheets, cfg: g.cfg, estoque: g.estoque, preco: g.preco, fitaPreco: g.fitaPreco || 0, fitaNome: g.fitaNome || '',
       nNovas: sheets.filter(function (s) { return !s.sobra; }).length, nSobras: sheets.filter(function (s) { return !!s.sobra; }).length });
+  }
+  if (cfg.consolidar !== false) {
+    // Peças das últimas chapas que cabem em espaço livre das primeiras sobem para elas. Renumera as chapas depois.
+    let n = 0;
+    out.forEach(function (g) {
+      g.sheets = consolidar(g.sheets);
+      g.sheets.forEach(function (s) { s.n = ++n; });
+      g.nNovas = g.sheets.filter(function (s) { return !s.sobra; }).length;
+      g.nSobras = g.sheets.filter(function (s) { return !!s.sobra; }).length;
+    });
+    nTotal = n;
   }
   return { groups: out, nChapas: nTotal };
 }

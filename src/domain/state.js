@@ -49,7 +49,7 @@ export function newBlock(state, o) {
   const { fromMm } = fmtFor(state.unit);
   return {
     uid: ++state.uid, nome: o.nome || '', esp: o.esp || '15', sw: o.sw || fromMm(2750), sh: o.sh || fromMm(1850),
-    veio: o.veio !== false, estoque: o.estoque || '', preco: o.preco || '', fita: o.fita || '', fitaNome: o.fitaNome || '',
+    veio: o.veio === true, estoque: o.estoque || '', preco: o.preco || '', fita: o.fita || '', fitaNome: o.fitaNome || '',
     usarSobras: o.usarSobras !== false, origem: o.origem || '', mode: o.mode === 'paste' ? 'paste' : 'form', paste: o.paste || '',
     rows: (o.rows && o.rows.length ? o.rows : [{}]).map((r) => newRow(state, r)),
   };
