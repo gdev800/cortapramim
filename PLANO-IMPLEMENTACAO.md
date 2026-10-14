@@ -83,7 +83,7 @@ Escolha recomendada: **Supabase** (Postgres + autenticação pronta). Motivos:
 Alternativa considerada: Firebase (bom, mas banco de documentos deixa relatórios mais trabalhosos).
 `infra/persistence.js` já isola o armazenamento: a troca não mexe em `core/`, `domain/` nem nos componentes.
 
-## Parte 7 — Projeto no Supabase e modelo de dados (fase 19)  [ ]
+## Parte 7 — Projeto no Supabase e modelo de dados (fase 19)  [x]
 **Passo manual do Gabriel:** criar a conta e o projeto no Supabase (região São Paulo) e passar URL e chave pública (anon).
 - `supabase/migrations/001_inicial.sql` versionado no repositório:
   `oficinas` (marcenaria), `membros` (usuário ↔ oficina, papel dono/membro), `projetos`, `sobras`, `insumos`, `historico`.
@@ -92,6 +92,11 @@ Alternativa considerada: Firebase (bom, mas banco de documentos deixa relatório
 - Índices para o relatório mensal (`historico(oficina_id, data)`).
 **Testes:** script de testes de RLS (usuário A não enxerga nada da oficina B; sem login não lê nada).
 **Pronto quando:** migração aplica do zero e os testes de RLS passam.
+**Feito:** `supabase/migrations/001_inicial.sql` e `supabase/tests` (46 verificações; `npm run test:rls`; CI sugerido em `supabase/README.md`, ainda não criado).
+Ids de texto do app mantidos com chave `(oficina_id, id)`; `projetos.entrada` (o que foi digitado) e `projetos.plano` em JSON;
+histórico com colunas tipadas (sem a foto do desfazer, que fica no navegador). Funções de permissão no schema `privado`
+(fora da API), `security definer` com `search_path` vazio. A oficina nunca fica sem dono.
+**Pendente (manual):** aplicar a migração no projeto real do Supabase (ver `supabase/README.md`).
 
 ## Parte 8 — Login (fase 20)  [ ]
 - Tela de entrada: **Entrar com Google**, **e-mail e senha**, **código por e-mail** (sem senha). Recuperar senha. Sair.
@@ -146,9 +151,9 @@ Alternativa considerada: Firebase (bom, mas banco de documentos deixa relatório
 | 2 Histórico | feito | (ver git log) |
 | 3 Relatório mensal | feito | (ver git log) |
 | 4 Estoque mínimo | feito | (ver git log) |
-| 5 Importar Promob/SketchUp | a fazer | |
+| 5 Importar Promob/SketchUp | adiada (falta um arquivo real exportado pelo Gilmar) | |
 | 6 Exportar ERP | a fazer | |
-| 7 Supabase e modelo de dados | a fazer (precisa conta Supabase) | |
+| 7 Supabase e modelo de dados | feito (falta aplicar no projeto real) | (ver git log) |
 | 8 Login Google / e-mail e senha / código | a fazer | |
 | 9 Dados na nuvem e oficina compartilhada | a fazer | |
 | 10 Segurança (XSS, SQL, CSP, SRI, libs) | a fazer | |

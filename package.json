@@ -8,7 +8,8 @@
     "build": "node scripts/build.mjs",
     "test": "node --test \"tests/unit/*.test.js\" \"tests/melhorias/unit/*.test.js\"",
     "test:e2e": "node --test --test-timeout=600000 \"tests/e2e/*.test.js\" \"tests/melhorias/e2e/*.test.js\"",
-    "test:all": "npm run test && npm run build && npm run test:e2e"
+    "test:all": "npm run test && npm run build && npm run test:e2e",
+    "test:rls": "bash supabase/tests/run-local.sh"
   },
   "devDependencies": {
     "esbuild": "^0.25.12",
