@@ -1,5 +1,6 @@
 // Estoque (sobras, fita e ferragens) escondido por padrão: abre com um clique, com o resumo no botão.
 import { $ } from '../../dom.js';
+import { abaixoDoMinimo } from '../../../domain/restock.js';
 
 export default {
   abre:
@@ -10,7 +11,7 @@ export default {
     const { state, bus } = ctx;
     const det = $('sobras');
     const n = (k, um, ois) => k + ' ' + (k === 1 ? um : ois);
-    const resumo = () => { $('estoqueResumo').textContent = n(state.estoque.length, 'sobra', 'sobras') + ' · ' + n(state.insumos.length, 'item de fita, ferragem ou chapa', 'itens de fita, ferragens e chapas'); };
+    const resumo = () => { $('estoqueResumo').textContent = n(state.estoque.length, 'sobra', 'sobras') + ' · ' + n(state.insumos.length, 'item de fita, ferragem ou chapa', 'itens de fita, ferragens e chapas') + (abaixoDoMinimo(state).length ? ' · ' + abaixoDoMinimo(state).length + ' abaixo do mínimo' : ''); };
     ['estoque', 'insumos', 'loaded'].forEach((e) => bus.on(e, resumo));
     resumo();
     // O link "Estoque" da barra do topo abre a seção.

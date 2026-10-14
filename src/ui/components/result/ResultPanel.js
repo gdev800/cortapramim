@@ -9,8 +9,9 @@ import Export from './Export.js';
 import Sheets from './Sheets.js';
 import Editor from './Editor.js';
 import Zoom from './Zoom.js';
+import MinWarn from './MinWarn.js';
 
-const FILHOS = [Summary, Needs, Compare, Approve, Export, Sheets, Editor, Zoom];
+const FILHOS = [Summary, Needs, Compare, Approve, Export, Sheets, Editor, Zoom, MinWarn];
 
 export default {
   template: () => html,

@@ -13,6 +13,7 @@ import ScrapsPanel from './components/scraps/index.js';
 import SuppliesPanel from './components/supplies/index.js';
 import HistoryPanel from './components/history/index.js';
 import MonthlyPanel from './components/monthly/index.js';
+import ShoppingPanel from './components/shopping/index.js';
 import ResultPanel from './components/result/ResultPanel.js';
 import Datalists from './components/shared/datalists.js';
 import Dock from './components/nav/Dock.js';
@@ -27,7 +28,7 @@ const PAGINA = [
   { html: secHeader('montar', 'Monte o plano', 'Do caderno para o corte.', 'Nomeie o projeto, descreva cada chapa com suas peças e calcule. Tudo que você digita fica guardado.') },
   { c: ProjectPanel }, { c: ModelsPanel }, { c: EntryPanel },
   { c: ResultPanel },
-  { html: Stock.abre }, { c: ScrapsPanel }, { c: SuppliesPanel }, { c: HistoryPanel }, { c: MonthlyPanel }, { html: Stock.fecha },
+  { html: Stock.abre }, { c: ShoppingPanel }, { c: ScrapsPanel }, { c: SuppliesPanel }, { c: HistoryPanel }, { c: MonthlyPanel }, { html: Stock.fecha },
   { html: FOOTER },
 ];
 const todos = [Nav, ...PAGINA.filter((p) => p.c).map((p) => p.c), Stock, Dock, Datalists];

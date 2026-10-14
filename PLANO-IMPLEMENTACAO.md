@@ -52,11 +52,14 @@ Falta o **extrato** (o que entrou e saiu, quando e em qual projeto). O relatóri
 (mês pelo horário local; clicar numa barra escolhe o mês; métrica chapas/peças/economia), gráfico em `monthly/chart.js`,
 PDF em `infra/pdf/monthly.js`. Aproveitamento = soma da área das peças / soma da área das chapas (média ponderada).
 
-## Parte 4 — Estoque mínimo e lista de compras (fase 16)  [ ]
+## Parte 4 — Estoque mínimo e lista de compras (fase 16)  [x]
 - Campo opcional `min` em cada insumo (chapa, fita, ferragem).
 - Aviso no topo do Estoque e no resultado: "Branco TX 15 mm: 3 chapas, abaixo do mínimo 5".
 - "Lista de compras": o que está abaixo do mínimo + o que o plano atual pede; exporta CSV/PDF.
 **Testes:** abaixo/igual/acima do mínimo; soma com a necessidade do plano.
+**Feito:** `domain/restock.js` (`definirMinimo`, `abaixoDoMinimo`, `listaDeCompras`, `avisosDoPlano`, `csvCompras`);
+comprar = max(0, plano pede + mínimo − tenho); igual ao mínimo não avisa. Painel `ui/components/shopping` no topo do Estoque,
+campo "mín." em cada insumo, aviso no resultado (`result/MinWarn.js`, some depois de "Atualizar estoque"), PDF em `infra/pdf/shopping.js`.
 
 ## Parte 5 — Importar lista de corte do Promob/SketchUp (fase 17)  [ ]
 - Já lemos CSV/XLSX genérico (`infra/xlsx.js`, `linhasParaTexto`). Adicionar reconhecimento das colunas
@@ -142,7 +145,7 @@ Alternativa considerada: Firebase (bom, mas banco de documentos deixa relatório
 | 1 Estoque de chapas | feito | (ver git log) |
 | 2 Histórico | feito | (ver git log) |
 | 3 Relatório mensal | feito | (ver git log) |
-| 4 Estoque mínimo | a fazer | |
+| 4 Estoque mínimo | feito | (ver git log) |
 | 5 Importar Promob/SketchUp | a fazer | |
 | 6 Exportar ERP | a fazer | |
 | 7 Supabase e modelo de dados | a fazer (precisa conta Supabase) | |

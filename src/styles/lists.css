@@ -4,3 +4,7 @@
 .srow b { font-family: var(--f-mono); font-weight: 500; }
 .srow button { min-height: 36px; padding: 0 14px; font-size: 0.84rem; }
 
+/* Estoque mínimo (fase 16) */
+.aviso-min { margin: 8px 0; }
+.aviso-min .msg { margin: 2px 0; font-weight: 600; }
+.srow.abaixo-min > span:first-child { color: var(--warn); font-weight: 600; }

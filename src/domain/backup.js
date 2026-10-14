@@ -43,6 +43,6 @@ export function sobrasParaImportar(d, atuais) {
 
 export function insumosParaImportar(d, atuais) {
   const ids = new Set(atuais.map((s) => s.id)), out = [];
-  (d.insumos || []).forEach((s) => { if (insumoValido(s) && !ids.has(s.id)) { s.q = Number(s.q); out.push(s); ids.add(s.id); } });
+  (d.insumos || []).forEach((s) => { if (insumoValido(s) && !ids.has(s.id)) { s.q = Number(s.q); if (s.min != null) { if (Number(s.min) > 0 && isFinite(Number(s.min))) s.min = Number(s.min); else delete s.min; } out.push(s); ids.add(s.id); } });
   return out;
 }
