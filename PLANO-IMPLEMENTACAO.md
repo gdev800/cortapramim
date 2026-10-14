@@ -98,12 +98,20 @@ histórico com colunas tipadas (sem a foto do desfazer, que fica no navegador). 
 (fora da API), `security definer` com `search_path` vazio. A oficina nunca fica sem dono.
 **Pendente (manual):** aplicar a migração no projeto real do Supabase (ver `supabase/README.md`).
 
-## Parte 8 — Login (fase 20)  [ ]
+## Parte 8 — Login (fase 20)  [x]
 - Tela de entrada: **Entrar com Google**, **e-mail e senha**, **código por e-mail** (sem senha). Recuperar senha. Sair.
 - Supabase Auth (`@supabase/supabase-js`, versão fixa). Senha mínima 8, proteção contra senha vazada ligada no painel.
 - Sessão renovada automaticamente; sem login o app continua funcionando "neste navegador" (modo atual), com aviso.
 - Configurar no painel: URLs de retorno permitidas (só o domínio do app), modelo de e-mail em português.
 **Testes:** e2e com usuário de teste em ambiente local (Supabase local via CLI), nunca com credenciais reais no código.
+**Feito:** `domain/auth.js` (validações e erros em português), `infra/auth.js` (adaptador, nunca lança),
+`infra/supabase/` (config com a chave publicável e cliente), janela `ui/components/account` com botão "Entrar" no topo.
+Google, e-mail e senha, código por e-mail (reenvio após 60 s), criar conta, esqueci a senha e senha nova. Só fora do claude.ai.
+Biblioteca `@supabase/supabase-js` 2.117.2 fixa e embutida (sem CDN); o build passou a compactar por padrão (`--dev` gera legível).
+Testes: o e2e usa um Supabase falso dentro do navegador, porque esta sessão não alcança o Supabase. Testar contra o projeto
+real (ou Supabase local via CLI) fica para quando houver rede.
+**Ainda manual (painel):** URLs de retorno, modelo de e-mail com `{{ .Token }}`, SMTP próprio, Google (ver `supabase/README.md`).
+Proteção contra senha vazada exige o plano Pro (fica de fora no Free).
 
 ## Parte 9 — Dados na nuvem e oficina compartilhada (fase 21)  [ ]
 - `infra/persistence.js`: modo `supabase` ao lado de `local` e `claude` (o artefato continua usando o banco do claude.ai).
@@ -154,7 +162,7 @@ histórico com colunas tipadas (sem a foto do desfazer, que fica no navegador). 
 | 5 Importar Promob/SketchUp | adiada (falta um arquivo real exportado pelo Gilmar) | |
 | 6 Exportar ERP | a fazer | |
 | 7 Supabase e modelo de dados | feito (falta aplicar no projeto real) | (ver git log) |
-| 8 Login Google / e-mail e senha / código | a fazer | |
+| 8 Login Google / e-mail e senha / código | feito (falta configurar o painel) | (ver git log) |
 | 9 Dados na nuvem e oficina compartilhada | a fazer | |
 | 10 Segurança (XSS, SQL, CSP, SRI, libs) | a fazer | |
 | 11 LGPD | a fazer | |

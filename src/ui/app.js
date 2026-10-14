@@ -14,6 +14,9 @@ import SuppliesPanel from './components/supplies/index.js';
 import HistoryPanel from './components/history/index.js';
 import MonthlyPanel from './components/monthly/index.js';
 import ShoppingPanel from './components/shopping/index.js';
+import AccountPanel from './components/account/index.js';
+import { loginDisponivel, obterCliente } from '../infra/supabase/client.js';
+import { criarAuth } from '../infra/auth.js';
 import ResultPanel from './components/result/ResultPanel.js';
 import Datalists from './components/shared/datalists.js';
 import Dock from './components/nav/Dock.js';
@@ -29,12 +32,15 @@ const PAGINA = [
   { c: ProjectPanel }, { c: ModelsPanel }, { c: EntryPanel },
   { c: ResultPanel },
   { html: Stock.abre }, { c: ShoppingPanel }, { c: ScrapsPanel }, { c: SuppliesPanel }, { c: HistoryPanel }, { c: MonthlyPanel }, { html: Stock.fecha },
+  { c: AccountPanel },
   { html: FOOTER },
 ];
 const todos = [Nav, ...PAGINA.filter((p) => p.c).map((p) => p.c), Stock, Dock, Datalists];
 
 export async function startApp(root) {
   const ctx = createContext();
+  // login próprio (Supabase) só fora do claude.ai
+  if (loginDisponivel()) { try { ctx.auth = criarAuth(obterCliente(), window.location); } catch (e) { ctx.auth = null; } }
   const { state, bus, pers } = ctx;
 
   root.innerHTML = Nav.template(ctx) + '<main class="wrap" id="topo">' +

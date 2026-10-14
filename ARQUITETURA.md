@@ -14,6 +14,7 @@ Analogia: `core` é o motor do carro, `domain` o painel de regras (pode ou não 
 - **core**: `planejar()` recebe grupos de peças e devolve chapas, cortes e sobras. Testável em Node.
 - **domain**: `coletar(state)`, `custos()`, `necessidades()`, `trocarUnidade()` etc. Nada de `document`.
 - **infra**: `persistence` (conta na nuvem ou navegador), `pdf/*`, `xlsx`, `raster`.
+  `auth` + `supabase/` (login com Supabase Auth, só fora do claude.ai; `ctx.auth` e evento `auth` no barramento).
 - **ui**: `context` (estado, barramento, serviços), `app` (monta a página), `components/*`.
 
 ## Motor de corte (core), em etapas

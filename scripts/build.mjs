@@ -1,4 +1,6 @@
-// Gera dist/plano-corte-mdf.html: um único arquivo com CSS e JS embutidos.
+// Gera dist/plano-corte-mdf.html: um único arquivo com CSS e JS embutidos, compactado.
+// Uso: node scripts/build.mjs        (compactado, é o que vai para o site)
+//      node scripts/build.mjs --dev  (legível, para depurar)
 import { build } from 'esbuild';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -8,7 +10,9 @@ const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 const r = await build({
   entryPoints: [join(raiz, 'src/main.js')],
   bundle: true, write: false, format: 'iife', target: 'es2020', outdir: join(raiz, 'dist/tmp'),
-  loader: { '.html': 'text' }, legalComments: 'none', minify: process.argv.includes('--min'),
+  loader: { '.html': 'text' }, legalComments: 'none',
+  // compacta por padrão (a biblioteca do Supabase triplicava o arquivo); --dev gera legível para depurar
+  minify: !process.argv.includes('--dev'), keepNames: true,
   logLevel: 'warning',
 });
 const saida = (ext) => r.outputFiles.find((f) => f.path.endsWith(ext)).text;

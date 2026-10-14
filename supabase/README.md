@@ -57,3 +57,24 @@ Depois de aplicar, confira em **Authentication → Policies** que as 6 tabelas a
 
 - **Project URL** e **anon key**: públicas, vão no front. Quem protege os dados é o RLS.
 - **service_role key** e **senha do banco**: nunca no repositório, nunca no front, nunca em mensagem.
+
+## Configurar o login no painel (Parte 8)
+
+O código do login já está no app (`src/infra/auth.js`, `src/ui/components/account`). No painel do Supabase:
+
+1. **Authentication → URL Configuration**
+   - Site URL: `https://gdev800.github.io/cortapramim/`
+   - Redirect URLs: `https://gdev800.github.io/cortapramim/**` e `http://localhost:*/**`
+2. **Authentication → Sign In / Providers → Email**: ligado, com **Confirm email** ligado.
+   Senha mínima: **8** (o app já exige 8). "Leaked password protection" só existe no plano Pro.
+3. **Authentication → Emails (templates)**, em português. No modelo **Magic Link**, inclua o código
+   `{{ .Token }}`: é ele que o app pede em "Código por e-mail". Exemplo:
+   > Seu código para entrar no Corta pra Mim é **{{ .Token }}**. Ele vale por 1 hora. Se não foi você, ignore este e-mail.
+4. **E-mail de verdade (SMTP)**: o envio padrão do Supabase só entrega para membros da organização e com poucos
+   e-mails por hora. Para outras pessoas (Gilmar, clientes), configure um SMTP próprio em
+   **Project Settings → Authentication → SMTP** (ex.: Resend, com um domínio seu).
+5. **Google** (opcional): crie um "OAuth client ID" (tipo Web) no Google Cloud, com o redirect
+   `https://xqzfitcxmwftciyxkwno.supabase.co/auth/v1/callback`, e cole o Client ID e o Secret em
+   **Authentication → Sign In / Providers → Google**. Sem isso o botão "Entrar com Google" mostra que não está configurado.
+
+A chave usada no app (`src/infra/supabase/config.js`) é a **publishable** (pública). A secreta nunca entra no código.

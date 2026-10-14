@@ -1,0 +1,58 @@
+<dialog id="contaDlg" class="conta" aria-labelledby="contaTit">
+  <div class="row between"><h2 id="contaTit">Entrar</h2><button type="button" id="contaFecha" aria-label="Fechar">Fechar</button></div>
+
+  <div data-v="entrar">
+    <p class="hint">Sem entrar, o app continua funcionando: os dados ficam só neste navegador.</p>
+    <button type="button" id="ctGoogle" class="conta-google">Entrar com Google</button>
+    <div class="conta-ou"><span>ou com e-mail</span></div>
+    <div class="seg sm" role="group" aria-label="Como entrar">
+      <button type="button" id="ctModoSenha" aria-pressed="true">Senha</button>
+      <button type="button" id="ctModoCodigo" aria-pressed="false">Código por e-mail</button>
+    </div>
+    <form id="ctFormSenha" class="conta-f" novalidate>
+      <div class="field"><label for="ctEmail">E-mail</label><input id="ctEmail" type="email" autocomplete="email" inputmode="email" required></div>
+      <div class="field"><label for="ctSenha">Senha</label><input id="ctSenha" type="password" autocomplete="current-password" required></div>
+      <button type="submit" class="primary">Entrar</button>
+      <div class="row"><button type="button" class="link" data-ir="criar">Criar conta</button><button type="button" class="link" data-ir="recuperar">Esqueci a senha</button></div>
+    </form>
+    <form id="ctFormCodigo" class="conta-f" novalidate hidden>
+      <div class="field"><label for="ctEmailC">E-mail</label><input id="ctEmailC" type="email" autocomplete="email" inputmode="email" required></div>
+      <button type="submit" class="primary" id="ctEnviarCod">Enviar código</button>
+      <div id="ctCodBox" class="conta-f" hidden>
+        <div class="field"><label for="ctCodigo">Código que chegou no e-mail</label><input id="ctCodigo" inputmode="numeric" autocomplete="one-time-code" maxlength="12"></div>
+        <button type="button" class="primary" id="ctConfirmarCod">Confirmar código</button>
+      </div>
+      <p class="hint">Se for o primeiro acesso, a conta é criada com esse e-mail.</p>
+    </form>
+  </div>
+
+  <form data-v="criar" id="ctFormCriar" class="conta-f" novalidate hidden>
+    <div class="field"><label for="ctEmailN">E-mail</label><input id="ctEmailN" type="email" autocomplete="email" inputmode="email" required></div>
+    <div class="field"><label for="ctSenhaN">Senha (mínimo 8 caracteres)</label><input id="ctSenhaN" type="password" autocomplete="new-password" required></div>
+    <div class="field"><label for="ctSenhaN2">Repita a senha</label><input id="ctSenhaN2" type="password" autocomplete="new-password" required></div>
+    <button type="submit" class="primary">Criar conta</button>
+    <button type="button" class="link" data-ir="entrar">Já tenho conta</button>
+  </form>
+
+  <form data-v="recuperar" id="ctFormRec" class="conta-f" novalidate hidden>
+    <p class="hint">Mandamos um link para você criar uma senha nova.</p>
+    <div class="field"><label for="ctEmailR">E-mail</label><input id="ctEmailR" type="email" autocomplete="email" inputmode="email" required></div>
+    <button type="submit" class="primary">Enviar link</button>
+    <button type="button" class="link" data-ir="entrar">Voltar</button>
+  </form>
+
+  <form data-v="nova" id="ctFormNova" class="conta-f" novalidate hidden>
+    <p class="hint">Crie a sua senha nova.</p>
+    <div class="field"><label for="ctSenhaX">Senha nova (mínimo 8 caracteres)</label><input id="ctSenhaX" type="password" autocomplete="new-password" required></div>
+    <div class="field"><label for="ctSenhaX2">Repita a senha nova</label><input id="ctSenhaX2" type="password" autocomplete="new-password" required></div>
+    <button type="submit" class="primary">Salvar senha nova</button>
+  </form>
+
+  <div data-v="conta" hidden>
+    <p>Você entrou como <b id="ctQuem"></b>.</p>
+    <p class="hint">Por enquanto os seus dados continuam guardados só neste navegador. Guardar na conta e dividir com a equipe vem na próxima etapa.</p>
+    <div class="row"><button type="button" id="ctTrocarSenha">Trocar senha</button><button type="button" id="ctSair">Sair</button></div>
+  </div>
+
+  <p id="ctMsg" class="msg" role="status" aria-live="polite"></p>
+</dialog>
