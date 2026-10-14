@@ -1,4 +1,5 @@
 // Guardar no navegador (localStorage). Nunca deve quebrar o app: se o navegador bloquear, simplesmente não guarda.
+// Não mudar as chaves: são onde os dados já guardados no navegador estão (vêm do nome antigo, Plano de Corte MDF).
 export const KEYS = {
   draft: 'plano-mdf-v4',
   draftAntigo: 'plano-mdf-v3',

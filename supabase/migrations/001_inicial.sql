@@ -1,4 +1,4 @@
--- Plano de Corte MDF — modelo de dados inicial (Parte 7, fase 19).
+-- Corta pra Mim — modelo de dados inicial (Parte 7, fase 19).
 -- Cada marcenaria é uma "oficina". Todo dado tem oficina_id e o próprio banco (RLS) só deixa
 -- membros da oficina lerem e gravarem. Analogia: a tela é o porteiro; o RLS é a fechadura de cada sala.
 --

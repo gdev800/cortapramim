@@ -15,7 +15,7 @@ export function pdfRodape(doc) {
   const n = doc.getNumberOfPages();
   for (let i = 1; i <= n; i++) {
     doc.setPage(i); doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(140, 130, 118);
-    doc.text('Plano de Corte MDF · ' + hojeStr(), PM, 289); doc.text('Página ' + i + ' de ' + n, PW - PM, 289, { align: 'right' });
+    doc.text('Corta pra Mim · ' + hojeStr(), PM, 289); doc.text('Página ' + i + ' de ' + n, PW - PM, 289, { align: 'right' });
   }
 }
 

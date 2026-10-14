@@ -1,4 +1,6 @@
-# Plano de Corte MDF
+# Corta pra Mim
+
+Plano de corte de MDF para marcenarias pequenas (antes chamado Plano de Corte MDF).
 
 Otimiza o corte de chapas de MDF, reaproveita sobras e gera etiquetas, PDFs e orçamento. JavaScript puro, sem framework.
 

@@ -2,6 +2,7 @@
 import { snapshot } from './snapshot.js';
 import { insumoValido } from './supplies.js';
 
+// Não mudar: identifica os backups (inclusive os feitos antes do nome Corta pra Mim).
 export const APP_ID = 'plano-corte-mdf';
 
 export function montarPacote(state) {
@@ -17,7 +18,7 @@ export const nomeArquivoBackup = () => 'backup-plano-de-corte-' + new Date().toI
 export function lerPacote(texto) {
   let d;
   try { d = JSON.parse(texto); } catch (e) { return { erro: 'Esse arquivo não é um backup válido.' }; }
-  if (!d || d.app !== APP_ID || !Array.isArray(d.projetos)) return { erro: 'Esse arquivo não é um backup do Plano de Corte.' };
+  if (!d || d.app !== APP_ID || !Array.isArray(d.projetos)) return { erro: 'Esse arquivo não é um backup do Corta pra Mim.' };
   return { d };
 }
 
