@@ -8,7 +8,7 @@ export function montarPacote(state) {
   const atual = snapshot(state, true);
   const temAlgo = state.res || state.blocks.some((b) => b.rows.some((r) => r.c || r.l) || b.paste);
   if (temAlgo) { atual.id = state.proj.id || 'atual'; atual.nome = state.proj.nome || 'Trabalho em andamento'; atual.atualizado = Date.now(); }
-  return { app: APP_ID, versao: 1, exportadoEm: new Date().toISOString(), estoque: state.estoque, insumos: state.insumos, projetos: state.projetos.slice(), atual };
+  return { app: APP_ID, versao: 2, exportadoEm: new Date().toISOString(), estoque: state.estoque, insumos: state.insumos, historico: (state.historico || []).map((m) => { const c = { ...m }; delete c.desfazer; return c; }), projetos: state.projetos.slice(), atual };
 }
 
 export const nomeArquivoBackup = () => 'backup-plano-de-corte-' + new Date().toISOString().slice(0, 10) + '.json';

@@ -7,6 +7,7 @@ export const KEYS = {
   insumos: 'plano-mdf-insumos',
   mudanca: 'plano-mdf-mudanca',
   backup: 'plano-mdf-backup',
+  historico: 'plano-mdf-historico',
 };
 
 export const lget = (k) => { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : null; } catch (e) { return null; } };

@@ -3,6 +3,7 @@ import html from './template.html';
 import { adicionarInsumo, definirQuantidade, removerInsumo } from '../../../domain/supplies.js';
 import { toStr } from '../../../domain/units.js';
 import { $, esc } from '../../dom.js';
+import { fotografar, registrarEntrada, registrarAjuste } from '../../../domain/history.js';
 
 export default {
   template: () => html,
@@ -17,19 +18,31 @@ export default {
       el.innerHTML = state.insumos.map((s) =>
         '<div class="srow"><span>' + desc(s) + ' <span class="tag">' + (TAG[s.tipo] || s.tipo) + '</span></span><span class="row" style="flex-wrap:nowrap;gap:8px"><input class="qin" data-iq="' + esc(s.id) + '" inputmode="decimal" value="' + esc(toStr(s.q)) + '" aria-label="Quantidade em estoque de ' + esc(s.nome) + '"><span class="hint">' + (s.tipo === 'fita' ? 'm' : 'un') + '</span><button type="button" data-idel="' + esc(s.id) + '" aria-label="Remover">Remover</button></span></div>').join('');
     }
-    const mudou = () => { ctx.pers.saveInsumos(); bus.emit('insumos'); };
+    const mudou = () => { ctx.pers.saveInsumos(); ctx.pers.saveHistorico(); bus.emit('insumos'); bus.emit('historico'); };
+    const un = (it) => (it.tipo === 'fita' ? 'm' : 'un');
+    const rotulo = (it) => it.tipo === 'chapa' ? it.nome + ' ' + String(it.esp).replace('.', ',') + ' mm ' + ctx.fu(it.c) + '×' + ctx.fu(it.l) + ' ' + state.unit : it.nome;
 
     $('insList').addEventListener('change', (ev) => {
       if (!ev.target.dataset.iq) return;
-      definirQuantidade(state, ev.target.dataset.iq, ev.target.value); mudou();
+      const it = state.insumos.find((x) => x.id === ev.target.dataset.iq); if (!it) return;
+      const antes = fotografar(state), de = it.q;
+      definirQuantidade(state, it.id, ev.target.value);
+      if (it.q !== de) registrarAjuste(state, { tipoItem: it.tipo, nome: rotulo(it), de, para: it.q, un: un(it), obs: 'corrigido à mão' }, antes);
+      mudou();
     });
     $('insList').addEventListener('click', (ev) => {
       const b = ev.target.closest('button[data-idel]'); if (!b) return;
-      removerInsumo(state, b.dataset.idel); mudou();
+      const it = state.insumos.find((x) => x.id === b.dataset.idel), antes = fotografar(state);
+      removerInsumo(state, b.dataset.idel);
+      if (it) registrarAjuste(state, { tipoItem: it.tipo, nome: rotulo(it), de: it.q, para: 0, un: un(it), obs: 'removido' }, antes);
+      mudou();
     });
     $('btnIns').addEventListener('click', () => {
+      const antes = fotografar(state);
       const r = adicionarInsumo(state, { tipo: $('insTipo').value, nome: $('insNome').value, q: $('insQ').value, esp: $('insEsp').value, c: $('insC').value, l: $('insL').value });
       if (r.erro) { $('insMsg').textContent = r.erro; return; }
+      const it = r.item;
+      if (it) registrarEntrada(state, { tipoItem: it.tipo, nome: rotulo(it), q: r.q, un: un(it), obs: r.somou ? 'somado ao que já tinha' : '' }, antes);
       mudou();
       $('insMsg').textContent = r.somou ? 'Quantidade somada ao item existente.' : 'Item guardado.'; $('insNome').value = ''; $('insQ').value = '';
     });

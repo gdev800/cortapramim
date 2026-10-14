@@ -40,10 +40,12 @@ export function createPersistence({ state, backend, notify }) {
   }
   const est = listaDoc('estoque', KEYS.estoque, 'estoque', 'Não consegui salvar na sua conta agora. As sobras ficaram neste navegador.');
   const ins = listaDoc('insumos', KEYS.insumos, 'insumos', '');
+  const his = listaDoc('historico', KEYS.historico, 'historico', '');
 
   return {
     saveEstoque: () => est.save(), loadEstoque: () => est.load(),
     saveInsumos: () => ins.save(), loadInsumos: () => ins.load(),
+    saveHistorico: () => his.save(), loadHistorico: () => his.load(),
 
     async loadProjetos() {
       const local = lget(KEYS.projetos) || [];

@@ -19,8 +19,8 @@ const chapa = (st, q, extra = {}) => adicionarInsumo(st, { tipo: 'chapa', nome: 
 
 test('cadastra chapa em mm e soma quando material, espessura e tamanho batem (tamanho em qualquer ordem)', () => {
   const st = estado();
-  assert.deepEqual(chapa(st, 10), { somou: false });
-  assert.deepEqual(chapa(st, 2, { c: '185', l: '275' }), { somou: true });
+  assert.equal(chapa(st, 10).somou, false);
+  assert.equal(chapa(st, 2, { c: '185', l: '275' }).somou, true);
   assert.equal(st.insumos.length, 1);
   assert.deepEqual({ c: st.insumos[0].c, l: st.insumos[0].l, esp: st.insumos[0].esp, q: st.insumos[0].q }, { c: 2750, l: 1850, esp: 15, q: 12 });
   chapa(st, 1, { esp: '18' });

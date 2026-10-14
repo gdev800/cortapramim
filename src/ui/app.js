@@ -11,6 +11,7 @@ import ModelsPanel from './components/models/index.js';
 import EntryPanel from './components/entry/EntryPanel.js';
 import ScrapsPanel from './components/scraps/index.js';
 import SuppliesPanel from './components/supplies/index.js';
+import HistoryPanel from './components/history/index.js';
 import ResultPanel from './components/result/ResultPanel.js';
 import Datalists from './components/shared/datalists.js';
 import Dock from './components/nav/Dock.js';
@@ -25,7 +26,7 @@ const PAGINA = [
   { html: secHeader('montar', 'Monte o plano', 'Do caderno para o corte.', 'Nomeie o projeto, descreva cada chapa com suas peças e calcule. Tudo que você digita fica guardado.') },
   { c: ProjectPanel }, { c: ModelsPanel }, { c: EntryPanel },
   { c: ResultPanel },
-  { html: Stock.abre }, { c: ScrapsPanel }, { c: SuppliesPanel }, { html: Stock.fecha },
+  { html: Stock.abre }, { c: ScrapsPanel }, { c: SuppliesPanel }, { c: HistoryPanel }, { html: Stock.fecha },
   { html: FOOTER },
 ];
 const todos = [Nav, ...PAGINA.filter((p) => p.c).map((p) => p.c), Stock, Dock, Datalists];
@@ -50,8 +51,8 @@ export async function startApp(root) {
   // 2) dados guardados (na conta ou no navegador)
   Object.assign(ctx.backend, await detectarBackend());
   bus.emit('storage');
-  await pers.loadEstoque(); await pers.loadProjetos(); await pers.loadInsumos();
-  bus.emit('estoque'); bus.emit('projetos'); bus.emit('insumos'); bus.emit('blocks');
+  await pers.loadEstoque(); await pers.loadProjetos(); await pers.loadInsumos(); await pers.loadHistorico();
+  bus.emit('estoque'); bus.emit('projetos'); bus.emit('insumos'); bus.emit('historico'); bus.emit('blocks');
   if (!carregou) ctx.actions.calcular(4, true);
 
   // Atalho para testes automáticos e para quem quer inspecionar pelo console.

@@ -2,6 +2,7 @@
 import { sheetSVG, PAL_SCREEN } from '../../../core/index.js';
 import { retalhosDaChapa, guardarRetalho } from '../../../domain/scraps.js';
 import { $, esc } from '../../dom.js';
+import { fotografar, registrarEntrada } from '../../../domain/history.js';
 
 export default {
   mount(ctx) {
@@ -39,9 +40,14 @@ export default {
     $('zoomList').addEventListener('click', async (ev) => {
       const b = ev.target.closest('button[data-guardar]');
       if (b) {
+        const antes = fotografar(state);
         const r = guardarRetalho(state, atual, parseInt(b.dataset.guardar, 10));
         dizer(r.msg);
-        if (r.ok) { await ctx.pers.saveEstoque(); bus.emit('estoque'); bus.emit('approved'); ctx.save(); }
+        if (r.ok) {
+          const nv = state.estoque[state.estoque.length - 1];
+          registrarEntrada(state, { tipoItem: 'sobra', nome: nv.nome + ' ' + fu(nv.c) + '×' + fu(nv.l) + ' ' + state.unit, q: 1, un: 'un', obs: 'retalho da chapa ' + atual }, antes);
+          ctx.pers.saveHistorico(); bus.emit('historico');
+          await ctx.pers.saveEstoque(); bus.emit('estoque'); bus.emit('approved'); ctx.save(); }
         render(); return;
       }
       const row = ev.target.closest('[data-i]'); if (row) { sel = parseInt(row.dataset.i, 10); render(); }

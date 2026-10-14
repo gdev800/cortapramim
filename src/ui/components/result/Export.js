@@ -1,7 +1,7 @@
 // Exportar e guardar: PNG, PDFs, etiquetas, CSVs e atualização do estoque.
 import { sheetSVG, PAL_EXPORT, labelsSVG, csvCortes, csvPecas } from '../../../core/index.js';
-import { pendEstoque, aplicarPlanoNoEstoque } from '../../../domain/scraps.js';
-import { baixarInsumos } from '../../../domain/supplies.js';
+import { pendEstoque } from '../../../domain/scraps.js';
+import { saidaDoPlano } from '../../../domain/history.js';
 import { slug } from '../../../domain/units.js';
 import { custos } from '../../../domain/costs.js';
 import { csvRelatorio } from '../../../domain/report.js';
@@ -40,10 +40,11 @@ export default {
     }
 
     async function atualizarEstoque() {
-      aplicarPlanoNoEstoque(state);
-      if (baixarInsumos(state)) { ctx.pers.saveInsumos(); bus.emit('insumos'); }
+      const { nInsumos } = saidaDoPlano(state);
+      if (nInsumos) { ctx.pers.saveInsumos(); bus.emit('insumos'); }
+      ctx.pers.saveHistorico();
       await ctx.pers.saveEstoque();
-      bus.emit('estoque'); render();
+      bus.emit('estoque'); bus.emit('historico'); render();
     }
 
     async function exportar(bt) {

@@ -19,6 +19,7 @@ export function createState() {
     status: 'orcado',                 // andamento do projeto
     insumos: [],                      // estoque de fita e ferragens
     prop: { ...DEFAULT_PROP },        // dados da proposta ao cliente
+    historico: [],                    // movimentações do estoque (entradas, saídas, ajustes)
     estoque: [],                      // sobras guardadas
     projetos: [],                     // projetos salvos
     aj: { ...DEFAULT_AJ },            // ajustes (serra, refilo, tempo...)

@@ -5,6 +5,7 @@ import { gerarPdfEstoque } from '../../../infra/pdf/stock.js';
 import { pdfOk } from '../../../infra/pdf/lib.js';
 import { entregarPdf, MSG_PDF_INDISPONIVEL } from '../../deliver.js';
 import { $, esc } from '../../dom.js';
+import { fotografar, registrarEntrada, registrarAjuste } from '../../../domain/history.js';
 
 export default {
   template: () => html,
@@ -21,12 +22,17 @@ export default {
 
     $('sobraList').addEventListener('click', (ev) => {
       const b = ev.target.closest('button[data-sdel]'); if (!b) return;
+      const antes = fotografar(state), sb = state.estoque.find((s) => s.id === b.dataset.sdel);
       state.estoque = state.estoque.filter((s) => s.id !== b.dataset.sdel);
+      if (sb) { registrarAjuste(state, { tipoItem: 'sobra', nome: sb.nome + ' ' + fu(sb.c) + '×' + fu(sb.l) + ' ' + state.unit, de: 1, para: 0, un: 'un', obs: 'removida' }, antes); ctx.pers.saveHistorico(); bus.emit('historico'); }
       ctx.pers.saveEstoque(); bus.emit('estoque');
     });
     $('btnSobra').addEventListener('click', () => {
+      const antes = fotografar(state);
       const r = cadastrarSobra(state, { nome: $('sbNome').value, esp: $('sbEsp').value, c: $('sbC').value, l: $('sbL').value, q: $('sbQ').value, veio: $('sbVeio').checked });
       if (r.erro) { $('sbMsg').textContent = r.erro; return; }
+      registrarEntrada(state, { tipoItem: 'sobra', nome: $('sbNome').value.trim() + ' ' + $('sbC').value + '×' + $('sbL').value + ' ' + state.unit, q: r.n, un: 'un', obs: 'cadastrada à mão' }, antes);
+      ctx.pers.saveHistorico(); bus.emit('historico');
       ctx.pers.saveEstoque(); bus.emit('estoque');
       $('sbMsg').textContent = 'Sobra guardada.'; $('sbC').value = ''; $('sbL').value = '';
     });

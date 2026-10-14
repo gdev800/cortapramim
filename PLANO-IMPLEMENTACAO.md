@@ -26,7 +26,7 @@ Falta o **extrato** (o que entrou e saiu, quando e em qual projeto). O relatóri
 **Testes:** cadastrar, somar, casar com o grupo, "Comprar" = novas − estoque, baixa ao atualizar, backup ida e volta.
 **Pronto quando:** cadastro 10 chapas, calculo um plano de 4, o resumo mostra Tenho 10 / Comprar 0 e, ao atualizar, ficam 6.
 
-## Parte 2 — Histórico de movimentações (fase 14)  [ ]
+## Parte 2 — Histórico de movimentações (fase 14)  [x]
 **Objetivo:** registrar cada entrada e saída de estoque.
 - `src/domain/history.js` (puro): `registrarSaida(state, res)` monta um lançamento
   `{ id, data, tipo:'saida', projeto, pecas, chapas:[{nome,esp,q}], sobrasUsadas, sobrasNovas, fitaM, ferragens:[{nome,q}], areaPecas, areaPerda, custo }`;
@@ -137,7 +137,7 @@ Alternativa considerada: Firebase (bom, mas banco de documentos deixa relatório
 | Parte | Estado | Commit |
 |---|---|---|
 | 1 Estoque de chapas | feito | (ver git log) |
-| 2 Histórico | a fazer | |
+| 2 Histórico | feito | (ver git log) |
 | 3 Relatório mensal | a fazer | |
 | 4 Estoque mínimo | a fazer | |
 | 5 Importar Promob/SketchUp | a fazer | |

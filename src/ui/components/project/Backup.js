@@ -1,6 +1,7 @@
 // Backup em arquivo: exportar e importar projetos, sobras e insumos.
 import html from './backup.html';
 import { montarPacote, nomeArquivoBackup, lerPacote, projetosParaImportar, sobrasParaImportar, insumosParaImportar } from '../../../domain/backup.js';
+import { historicoParaImportar } from '../../../domain/history.js';
 import { $ } from '../../dom.js';
 import { baixarNoNavegador, emQuadro } from '../../deliver.js';
 
@@ -42,6 +43,8 @@ export default {
       if (sobras.length) { state.estoque.push(...sobras); await pers.saveEstoque(); }
       const ins = insumosParaImportar(d, state.insumos);
       if (ins.length) { state.insumos.push(...ins); pers.saveInsumos(); bus.emit('insumos'); }
+      const mov = historicoParaImportar(d, state.historico);
+      if (mov.length) { state.historico = (state.historico || []).concat(mov).sort((a, b) => String(a.data).localeCompare(String(b.data))); pers.saveHistorico(); bus.emit('historico'); }
       pers.flushProjetosLocal();
       bus.emit('projetos'); bus.emit('estoque'); bus.emit('blocks');
       slot.textContent = 'Backup importado: ' + projs.length + ' projeto(s) novo(s) ou atualizado(s) e ' + sobras.length + ' sobra(s) nova(s). Abra os projetos em "Meus projetos salvos".';

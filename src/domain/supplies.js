@@ -32,9 +32,10 @@ export function adicionarInsumo(state, { tipo, nome, q, esp, c, l }) {
   const n = String(nome).trim(), qtd = pIn(q);
   if (!n || !valida(qtd)) return { erro: 'Informe o nome e uma quantidade maior que zero.' };
   const ex = state.insumos.find((x) => x.tipo === tipo && norm(x.nome) === norm(n));
+  let item = ex;
   if (ex) ex.q = Math.round((ex.q + qtd) * 100) / 100;
-  else state.insumos.push({ id: newSid(), tipo, nome: n, q: qtd });
-  return { somou: !!ex };
+  else { item = { id: newSid(), tipo, nome: n, q: qtd }; state.insumos.push(item); }
+  return { somou: !!ex, item, q: qtd };
 }
 
 function adicionarChapa(state, { nome, q, esp, c, l }) {
@@ -44,9 +45,10 @@ function adicionarChapa(state, { nome, q, esp, c, l }) {
   if (!valida(qtd) || !Number.isInteger(qtd)) return { erro: 'A quantidade de chapas precisa ser um número inteiro maior que zero.' };
   const t = deitada(r2(cm), r2(lm));
   const ex = chapaDoEstoque(state, { nome: n, esp: e, SW: t.c, SH: t.l });
+  let item = ex;
   if (ex) ex.q += qtd;
-  else state.insumos.push({ id: newSid(), tipo: 'chapa', nome: n, esp: e, c: t.c, l: t.l, q: qtd });
-  return { somou: !!ex };
+  else { item = { id: newSid(), tipo: 'chapa', nome: n, esp: e, c: t.c, l: t.l, q: qtd }; state.insumos.push(item); }
+  return { somou: !!ex, item, q: qtd };
 }
 
 export function definirQuantidade(state, id, valor) {
