@@ -1,0 +1,14 @@
+.rel-mes { min-height: 38px; padding: 4px 12px; }
+.rel-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+.rel-card { background: var(--field); border-radius: 18px; padding: 14px 16px; min-width: 0; }
+.rel-card b { display: block; font-size: 1.45rem; font-variant-numeric: tabular-nums; margin-top: 2px; overflow-wrap: anywhere; }
+.rel-card .hint { font-size: 0.8rem; }
+.rel-grafico { margin-top: 6px; }
+.rel-svg { width: 100%; height: auto; display: block; max-height: 260px; }
+.rel-svg .rel-eixo { stroke: var(--line); stroke-width: 1; }
+.rel-svg rect { fill: var(--brass-soft); }
+.rel-svg .on rect { fill: var(--brass); }
+.rel-svg .rel-b { cursor: pointer; }
+.rel-svg text { font-size: 13px; fill: var(--muted); font-family: var(--f-mono); }
+.rel-svg .rel-v { fill: var(--fg); }
+.rel-svg .on text { font-weight: 700; fill: var(--fg); }

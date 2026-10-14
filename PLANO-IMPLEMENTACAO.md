@@ -38,7 +38,7 @@ Falta o **extrato** (o que entrou e saiu, quando e em qual projeto). O relatóri
 **Testes:** cada ação gera um lançamento certo; atualizar estoque duas vezes não duplica (já existe `estAtual`); backup v1 e v2.
 **Pronto quando:** aprovar e atualizar um plano aparece uma linha "Saída · projeto X · 34 peças · 4 chapas · 12 m de fita".
 
-## Parte 3 — Relatório mensal (fase 15)  [ ]
+## Parte 3 — Relatório mensal (fase 15)  [x]
 **Objetivo:** somar o histórico por mês.
 - `src/domain/monthly.js` (puro): `resumoDoMes(historico, ano, mes)` →
   peças cortadas, projetos, chapas por material, sobras usadas e geradas, fita, ferragens, aproveitamento médio
@@ -48,6 +48,9 @@ Falta o **extrato** (o que entrou e saiu, quando e em qual projeto). O relatóri
 - Exportar CSV e PDF (reaproveita `infra/pdf/common.js`).
 **Testes:** soma por mês com lançamentos em meses diferentes, mês vazio, virada de ano, CSV com acentos.
 **Pronto quando:** com 3 projetos atualizados em outubro, o relatório de outubro mostra as somas certas e o PDF baixa.
+**Feito:** `domain/monthly.js` (também `cartoesDoMes`, `csvMensal`, `somarMeses`), painel `ui/components/monthly` no Estoque
+(mês pelo horário local; clicar numa barra escolhe o mês; métrica chapas/peças/economia), gráfico em `monthly/chart.js`,
+PDF em `infra/pdf/monthly.js`. Aproveitamento = soma da área das peças / soma da área das chapas (média ponderada).
 
 ## Parte 4 — Estoque mínimo e lista de compras (fase 16)  [ ]
 - Campo opcional `min` em cada insumo (chapa, fita, ferragem).
@@ -138,7 +141,7 @@ Alternativa considerada: Firebase (bom, mas banco de documentos deixa relatório
 |---|---|---|
 | 1 Estoque de chapas | feito | (ver git log) |
 | 2 Histórico | feito | (ver git log) |
-| 3 Relatório mensal | a fazer | |
+| 3 Relatório mensal | feito | (ver git log) |
 | 4 Estoque mínimo | a fazer | |
 | 5 Importar Promob/SketchUp | a fazer | |
 | 6 Exportar ERP | a fazer | |

@@ -1,0 +1,13 @@
+  <section class="panel" aria-labelledby="t-rel">
+    <div class="row between"><h2 id="t-rel">Relatório do mês</h2>
+      <div class="row"><label for="relMes" class="label">Mês</label><input id="relMes" type="month" class="rel-mes"></div></div>
+    <p class="hint">Soma as saídas do histórico: o que os planos com estoque atualizado consumiram no mês escolhido.</p>
+    <div id="relVazio" class="hint" hidden>Nenhuma saída neste mês. Aprove um plano e clique em "Atualizar estoque" para ele entrar aqui.</div>
+    <div id="relCards" class="rel-cards"></div>
+    <div class="tbl" id="relTabela"></div>
+    <div class="row between" style="margin-top:18px"><span class="label">Mês a mês (últimos 6)</span>
+      <select id="relMetrica" class="stsel"><option value="chapas">Chapas novas</option><option value="pecas">Peças cortadas</option><option value="economia">Economia (R$)</option></select></div>
+    <div id="relGrafico" class="rel-grafico"></div>
+    <div class="row" style="margin-top:12px"><button id="btnRelCsv" type="button">Baixar CSV</button><button id="btnRelPdf" type="button">Baixar PDF</button></div>
+    <div id="relSlot" class="hint" role="status" aria-live="polite"></div>
+  </section>
