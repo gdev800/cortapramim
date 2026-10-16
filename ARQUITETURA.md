@@ -25,6 +25,7 @@ Analogia: `core` é o motor do carro, `domain` o painel de regras (pode ou não 
    inverter direção, girar, reagrupar uma cadeia de cortes (`reagrupar`) e levar uma peça para outro lugar (`realocar`).
 4. **Consolidação** (`consolidate.js`): peças das últimas chapas sobem para as primeiras.
 5. **Absorção** (`absorb.js`): se a chapa menos usada ficou abaixo de 40%, tenta passar as peças dela para as outras, rearrumando-as.
+6. **Chapas repetidas** (`repeat.js`): procura um desenho que sirva para k chapas (1/k de cada medida) e replaneja o resto; aceita se não gastar chapa a mais.
 
 Opções em `cfg` (todas ligadas por padrão; `false` volta ao jeito antigo):
 
@@ -34,6 +35,7 @@ Opções em `cfg` (todas ligadas por padrão; `false` volta ao jeito antigo):
 | `tentativas` | com 2+ chapas novas, roda até 4 tentativas curtas e fica com a de menos chapas (empate: sobra mais concentrada) |
 | `consolidar` | etapa 4 |
 | `absorver` | etapa 5 (segue `consolidar` se não vier explícito) |
+| `repetir` | etapa 6 (`repeat.js`): mesmo desenho em várias chapas quando não gasta chapa a mais; reserva 40% do tempo |
 
 Cada material no resultado traz `minNovas` (mínimo de chapas novas só pela área) e `areaNovas` (área das peças em chapas, ex.: 2,97).
 

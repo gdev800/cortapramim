@@ -13,7 +13,7 @@ export default {
       const out = $('cmpOut');
       const col = coletar(state);
       if (col.erros.length || !col.groups.length) { out.innerHTML = '<p class="msg err">Corrija a lista de peças antes de comparar.</p>'; return; }
-      const cfg = cfgDoMotor({ K: $('ajK').value, minRet: $('ajMin').value, refilo: $('ajRef').value, fases: $('ajFases').value });
+      const cfg = cfgDoMotor({ K: $('ajK').value, minRet: $('ajMin').value, refilo: $('ajRef').value, fases: $('ajFases').value, repetir: $('ajRep').checked });
       const pos = cenariosPossiveis(col.groups);
       state.running = true; $('btnCmp').disabled = true;
       let cen;

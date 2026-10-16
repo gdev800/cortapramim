@@ -19,6 +19,7 @@ export function cfgDoMotor(aj) {
     minRet: Math.max(0, pIn(aj.minRet) || 0),
     refilo: Math.min(MAX_REFILO_MM, Math.max(0, pIn(aj.refilo) || 0)),
     fases: [2, 3].includes(parseInt(aj.fases, 10)) ? parseInt(aj.fases, 10) : 0, // 0 = livre
+    repetir: aj.repetir !== false, // mesmo desenho em várias chapas quando não gasta chapa a mais
   };
 }
 

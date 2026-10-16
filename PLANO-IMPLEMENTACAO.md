@@ -38,6 +38,12 @@ Falta o **extrato** (o que entrou e saiu, quando e em qual projeto). O relatóri
 **Testes:** cada ação gera um lançamento certo; atualizar estoque duas vezes não duplica (já existe `estAtual`); backup v1 e v2.
 **Pronto quando:** aprovar e atualizar um plano aparece uma linha "Saída · projeto X · 34 peças · 4 chapas · 12 m de fita".
 
+## Extra — Chapas repetidas (comparação com o LeoPlan)  [x]
+Mesmo projeto real (289 peças, 4 materiais, serra 4,6 mm, refilo 5 mm): Leo 16 chapas / 515 cortes; nosso 16 chapas.
+Diferença era a Leo repetir o mesmo desenho em várias chapas. Agora `core/repeat.js` gera desenhos feitos para
+repetir (1/k de cada medida) e aceita só se o total de chapas não aumentar; ajuste "Repetir o mesmo desenho" (padrão ligado).
+No 15 mm: 3 desenhos (4× + 2× + 1×), como a Leo. Testes em `tests/melhorias/*/repetidas.test.js`.
+
 ## Parte 3 — Relatório mensal (fase 15)  [x]
 **Objetivo:** somar o histórico por mês.
 - `src/domain/monthly.js` (puro): `resumoDoMes(historico, ano, mes)` →

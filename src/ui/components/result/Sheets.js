@@ -3,6 +3,7 @@ import { sheetSVG, PAL_SCREEN } from '../../../core/index.js';
 import { pct } from '../../../domain/units.js';
 import { retalhosDaChapa } from '../../../domain/scraps.js';
 import { $, esc } from '../../dom.js';
+import { gruposDeDesenho, textoDesenho } from '../../../domain/patterns.js';
 
 export default {
   mount(ctx) {
@@ -24,6 +25,7 @@ export default {
     }
 
     function render() {
+      const des = state.res ? gruposDeDesenho(state.res) : new Map();
       const res = state.res; if (!res) return;
       const abertos = new Set(Array.from(document.querySelectorAll('#sheets details.ed[open]')).map((d) => d.dataset.edSheet));
       const un = state.unit; let nCh = 0; res.groups.forEach((g) => { nCh += g.sheets.length; });
@@ -31,7 +33,7 @@ export default {
       res.groups.forEach((g) => g.sheets.forEach((s) => {
         const mr = s.maiorRetalho, ref = s.cfg.ref || 0, temF = s.pecas.some((q) => q.cf), temP = s.pecas.some((q) => q.proj);
         const svg = sheetSVG(s, PAL_SCREEN, { fu, un, header: false, numbers: !!state.aj.num }, nCh);
-        h += '<article class="sheet" data-n="' + s.n + '"><div class="sheet-h"><div><h3>Chapa ' + s.n + ' de ' + nCh + (s.sobra ? '<span class="tag">sobra do estoque</span>' : '') + '</h3><div class="mat">' + esc(g.mat) + (g.esp ? ' · ' + g.esp + ' mm' : '') + ' · ' + fu(s.cfg.SW + 2 * ref) + ' × ' + fu(s.cfg.SH + 2 * ref) + ' ' + un + (g.veio ? ' · com veio' : '') + '</div></div>' +
+        h += '<article class="sheet" data-n="' + s.n + '"><div class="sheet-h"><div><h3>Chapa ' + s.n + ' de ' + nCh + (s.sobra ? '<span class="tag">sobra do estoque</span>' : '') + (des.get(s.n) ? '<span class="tag" data-desenho>' + esc(textoDesenho(des.get(s.n))) + '</span>' : '') + '</h3><div class="mat">' + esc(g.mat) + (g.esp ? ' · ' + g.esp + ' mm' : '') + ' · ' + fu(s.cfg.SW + 2 * ref) + ' × ' + fu(s.cfg.SH + 2 * ref) + ' ' + un + (g.veio ? ' · com veio' : '') + '</div></div>' +
           '<dl class="stats"><div><dt>Aproveitamento</dt><dd>' + pct(s.util) + '%</dd></div><div><dt>Maior retalho</dt><dd>' + (mr ? fu(mr.w) + '×' + fu(mr.h) : '—') + '</dd></div><div><dt>Peças</dt><dd>' + s.pecas.length + '</dd></div><div><dt>Cortes</dt><dd>' + s.nCortes + '</dd></div>' + (s.cfg.fases ? '<div><dt>Fases</dt><dd>' + s.fases + '</dd></div>' : '') + '</dl></div>' +
           '<div class="draw-wrap" data-zoom="' + s.n + '" title="Clique para ampliar e ver os retalhos" style="cursor:zoom-in">' + svg.svg + '</div>' +
           '<div class="row"><button type="button" data-zoom="' + s.n + '">Ampliar e ver retalhos (' + retalhosDaChapa(s).length + ')</button></div>' + editorHTML(g, s) +

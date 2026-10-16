@@ -1,6 +1,7 @@
 // PDF do plano de corte: resumo, compras, custos, uma página por chapa e o estoque de sobras.
 import { sheetSVG, PAL_EXPORT } from '../../core/index.js';
 import { RETALHO_MIN_LISTA } from '../../core/constants.js';
+import { gruposDeDesenho, textoDesenho } from '../../domain/patterns.js';
 import { fmtFor, money, toStr, pct } from '../../domain/units.js';
 import { custos } from '../../domain/costs.js';
 import { relatorioPlano, linhasRelatorio, linhasRelatorioMat, linhasPorProjeto, CAB_RELAT_MAT, CAB_RELAT_PROJ } from '../../domain/report.js';
@@ -54,10 +55,11 @@ export async function gerarPdfPlano(state) {
     y = pdfTabela(doc, y, CAB_RELAT_PROJ.map(semSup), pp.map((r) => r.map(semSup))) + 8;
   }
 
+  const des = gruposDeDesenho(res);
   for (const g of res.groups) {
     for (const s of g.sheets) {
       doc.addPage();
-      let yy = pdfTitulo(doc, 'Chapa ' + s.n + ' de ' + total, g.mat + (g.esp ? ' · ' + g.esp + ' mm' : '') + (s.sobra ? ' · sobra do estoque' : '') + (g.veio ? ' · com veio' : ''));
+      let yy = pdfTitulo(doc, 'Chapa ' + s.n + ' de ' + total, g.mat + (g.esp ? ' · ' + g.esp + ' mm' : '') + (s.sobra ? ' · sobra do estoque' : '') + (g.veio ? ' · com veio' : '') + (des.get(s.n) ? ' · ' + textoDesenho(des.get(s.n)).replace('×', 'x') : ''));
       const r = sheetSVG(s, PAL_EXPORT, { fu, un, header: false, numbers: true, sobras: true }, total);
       const cv = await svgToCanvas(r, 1800); const w = PW - 2 * PM, h = w * r.h / r.w;
       doc.addImage(cv.toDataURL('image/png'), 'PNG', PM, yy, w, h); yy += h + 6;

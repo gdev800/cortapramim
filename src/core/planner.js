@@ -8,6 +8,7 @@ import { otimizarChapa } from './sheet.js';
 import { encherSobra } from './scrap.js';
 import { consolidar } from './consolidate.js';
 import { absorverUltima } from './absorb.js';
+import { repetirDesenhos } from './repeat.js';
 
 const agora = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
 
@@ -80,6 +81,8 @@ export async function planejar(cfg, groups, totalMs, tick) {
   // Quantas tentativas cabem no tempo: metade do tempo para elas, ~150 ms por chapa em cada uma.
   const nTent = tentativas && nNovas0 >= 2 ? Math.max(1, Math.min(4, Math.floor(totalMs * 0.5 / (nSheets0 * 150)))) : 1;
   const multi = nTent > 1;
+  // reserva de tempo para procurar chapas repetidas (só vale com 3 chapas novas ou mais)
+  const reserva = cfg.repetir !== false && nNovas0 >= 3 ? 0.4 : 0;
   let virtual = 0; // linha do tempo da barra de progresso (ms)
   const total = totalMs;
 
@@ -118,7 +121,7 @@ export async function planejar(cfg, groups, totalMs, tick) {
 
   let out = null, best = null;
   for (let t = 0; t < nTent; t++) {
-    const r = await rodada(t, multi ? total * 0.5 / nTent : total);
+    const r = await rodada(t, (multi ? total * 0.5 / nTent : total) * (1 - reserva));
     const pl = placar(r);
     if (!best || melhor(pl, best)) { out = r; best = pl; }
     // já está no mínimo possível pela área: outras tentativas não ganham chapa
@@ -140,11 +143,27 @@ export async function planejar(cfg, groups, totalMs, tick) {
     }
   }
 
-  // Polimento: o tempo que sobrou vai para as chapas da tentativa escolhida.
+  // Chapas repetidas (cfg.repetir, padrão ligado): o mesmo desenho em várias chapas, sem gastar chapa a mais.
+  if (cfg.repetir !== false) {
+    const prazoRep = Math.max(1500, total * reserva);
+    let nGr = 0; out.forEach(function (g) { nGr += g.sheets.filter(function (s) { return !s.sobra; }).length; });
+    for (let gi = 0; gi < out.length; gi++) {
+      const g = out[gi], pr = preps[gi];
+      const resto = async (pecas, ms) => {
+        const sub = { ...pr.g, pieces: pecas, sobras: [] };
+        const r = await planejar({ ...cfg, repetir: false, absorver: true }, [sub], ms, function () { return tick(Math.min(0.99, virtual / total), 0, 0, 'Procurando chapas com o mesmo desenho…'); });
+        return r.groups[0].sheets;
+      };
+      const nova = await repetirDesenhos(g.sheets, resto, prazoRep * g.sheets.filter(function (s) { return !s.sobra; }).length / Math.max(1, nGr), agora, g.cfg.rot);
+      if (nova) { g.sheets = nova; fechar(out); }
+    }
+  }
+
+  // Polimento: o tempo que sobrou vai para as chapas da tentativa escolhida. Desenhos repetidos ficam como estão.
   if (multi) {
     const resta = total - (agora() - t0);
     const alvos = []; let nPol = 0;
-    out.forEach(function (g) { g.sheets.forEach(function (s, i) { if (s.spec && s.spec.items.length > 1) { alvos.push([g, i]); nPol += s.spec.items.length; } }); });
+    out.forEach(function (g) { g.sheets.forEach(function (s, i) { if (s.spec && s.spec.items.length > 1 && !s.repetido) { alvos.push([g, i]); nPol += s.spec.items.length; } }); });
     if (resta > 300 && alvos.length) {
       for (const [g, i] of alvos) {
         const s = g.sheets[i], ms = resta * s.spec.items.length / nPol, base = virtual;

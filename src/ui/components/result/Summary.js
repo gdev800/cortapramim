@@ -3,6 +3,7 @@ import { custos } from '../../../domain/costs.js';
 import { money, toStr, pct } from '../../../domain/units.js';
 import { economiaSobras } from '../../../domain/scraps.js';
 import { resumoMinimo } from '../../../domain/minimum.js';
+import { contarDesenhos } from '../../../domain/patterns.js';
 import { relatorioPlano, linhasRelatorio, linhasRelatorioMat, linhasPorProjeto, CAB_RELAT_MAT, CAB_RELAT_PROJ } from '../../../domain/report.js';
 import { $, esc } from '../../dom.js';
 
@@ -29,6 +30,8 @@ export default {
         '<div class="tile"><b>' + nPecas + '</b><span>peças</span></div>';
       const eco = economiaSobras(res);
       if (eco.nSobras) t += '<div class="tile"><b>' + (Math.round(eco.chapasEq * 100) / 100).toLocaleString('pt-BR') + '</b><span>de chapa nova evitada com ' + eco.nSobras + (eco.nSobras === 1 ? ' sobra' : ' sobras') + ' (' + eco.nPecas + (eco.nPecas === 1 ? ' peça' : ' peças') + ')' + (eco.valor > 0 ? ' · ≈ ' + money(eco.valor) : '') + '</span></div>';
+      const nDes = contarDesenhos(res);
+      if (nDes < nCh) t += '<div class="tile" id="tileDesenhos"><b>' + nDes + '</b><span>' + (nDes === 1 ? 'desenho de corte' : 'desenhos de corte') + ' para ' + nCh + ' chapas (chapas iguais cortam do mesmo jeito)</span></div>';
       if (c.fitaM > 0) t += '<div class="tile"><b>' + toStr(c.fitaM) + ' m</b><span>de fita de borda</span></div>';
       $('tiles').innerHTML = t;
 

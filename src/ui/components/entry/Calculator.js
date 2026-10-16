@@ -42,7 +42,7 @@ export default {
       const col = coletar(state);
       if (col.erros.length) { ctx.msg(col.erros.join(' '), 'err'); return; }
       if (!col.groups.length) { ctx.msg('Adicione ao menos uma peça.', 'err'); return; }
-      const cfg = cfgDoMotor({ K: $('ajK').value, minRet: $('ajMin').value, refilo: $('ajRef').value, fases: $('ajFases').value });
+      const cfg = cfgDoMotor({ K: $('ajK').value, minRet: $('ajMin').value, refilo: $('ajRef').value, fases: $('ajFases').value, repetir: $('ajRep').checked });
       const ref = cfg.refilo;
       const bad = naoCabem(col.groups.map((g) => ({ ...g, SW: g.SW - 2 * ref, SH: g.SH - 2 * ref })));
       if (bad.length) {

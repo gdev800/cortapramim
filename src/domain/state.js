@@ -5,7 +5,7 @@
 // @typedef {Object} State   Veja createState() abaixo.
 import { fmtFor, SIZES, pIn, fac } from './units.js';
 
-export const DEFAULT_AJ = { K: '3.2', minRet: '200', tempo: '15', num: true, refilo: '0', fitaEsp: '0', fases: '0' };
+export const DEFAULT_AJ = { K: '3.2', minRet: '200', tempo: '15', num: true, refilo: '0', fitaEsp: '0', fases: '0', repetir: true };
 export const DEFAULT_ORC = { mao: '', margem: '' };
 export const DEFAULT_PROP = { marcenaria: '', cliente: '', contato: '', servico: '', itens: '', validade: '15', pagamento: '', prazo: '', valor: '', mostrarMat: true };
 
