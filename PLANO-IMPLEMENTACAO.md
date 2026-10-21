@@ -126,6 +126,32 @@ Proteção contra senha vazada exige o plano Pro (fica de fora no Free).
 - Gravação com fila e reenvio quando a internet volta; conflito simples (o último salva, com aviso).
 **Pronto quando:** Gabriel e Gilmar, em computadores diferentes, veem o mesmo estoque e o mesmo relatório do mês.
 
+## Parte 9b — Plano de corte compartilhado por link e acompanhamento da execução (fase 21b)  [ ]
+**Pedido do Gabriel (21/10):** salvar o plano no sistema, mandar um link para alguém da equipe abrir,
+acompanhar em que etapa ele está e o dono da marcenaria ver tudo num painel.
+**Depende de:** Partes 7 e 8 configuradas no Supabase + Parte 9 (dados na nuvem). Pode passar na frente
+das Partes 5, 6, 10, 11 e 12; a segurança do link (abaixo) é feita aqui mesmo, sem esperar a Parte 10.
+- **Plano salvo no banco:** tabela `planos` (oficina_id, projeto, plano calculado em JSON, criado_por, criado_em,
+  `etapa`, `atualizado_em`). Ao aprovar o plano, ele é gravado; o mesmo plano pode ser aberto quantas vezes quiser.
+- **Etapas do corte** (além do status do projeto que já existe): Aguardando corte → Em corte → Cortado → Conferido
+  (e Cancelado). Dentro de "Em corte", marcar **chapa por chapa** ("chapa 3 de 7 cortada"), com quem marcou e quando.
+  Tabela `plano_eventos` (quem, quando, o que mudou): é o extrato da execução, igual ao histórico do estoque.
+- **Link para a equipe, dois tipos:**
+  1. *Convite de uso único:* o link vale uma vez e por prazo curto (ex.: 48 h). Quem abre faz login e passa a
+     enxergar aquele plano (ou a oficina) para sempre pela própria conta. Depois de usado, o link morre.
+  2. *Link da serra (opcional):* para o operador sem conta. Só vê o plano e marca chapas como cortadas;
+     não vê custos nem outros projetos; expira; o dono pode revogar.
+  O link guarda só um código aleatório longo; o banco guarda o **hash** do código, a validade, o tipo e se já foi usado.
+  A validação é uma função no banco (RPC) com parâmetros, sem SQL montado com texto; RLS continua valendo para tudo.
+- **Painel do dono:** lista dos planos com etapa, progresso (chapas cortadas / total), responsável e última mudança;
+  filtros por etapa e por mês; cada plano abre com a linha do tempo dos eventos.
+- **Integração com o que já existe:** quando o plano chega em "Cortado", oferece o "Atualizar estoque"
+  (saída no histórico); o relatório mensal passa a poder contar só planos cortados.
+**Testes:** RLS (membro de outra oficina não vê o plano; link expirado/usado/revogado não abre; link da serra não
+vê custos), etapas e progresso, linha do tempo, e2e do fluxo criar → compartilhar → marcar chapas → painel.
+**Pronto quando:** Gabriel aprova um plano, manda o link ao Gilmar, o Gilmar marca as chapas na serra e o painel do
+Gabriel mostra "Em corte · 3 de 7 chapas" e depois "Cortado", sem precisar trocar arquivo.
+
 ## Parte 10 — Segurança da aplicação (fase 22)  [ ]
 - **Injeção de HTML/script (XSS):** a tela monta HTML com texto. Revisar todo `innerHTML` e garantir `esc()` em
   qualquer dado digitado (nome de peça, projeto, cliente, material); teste que tenta `<img onerror>` em cada campo.
@@ -170,6 +196,7 @@ Proteção contra senha vazada exige o plano Pro (fica de fora no Free).
 | 7 Supabase e modelo de dados | feito (falta aplicar no projeto real) | (ver git log) |
 | 8 Login Google / e-mail e senha / código | feito (falta configurar o painel) | (ver git log) |
 | 9 Dados na nuvem e oficina compartilhada | a fazer | |
+| 9b Plano por link e acompanhamento | a fazer (depois de 7, 8 e 9) | |
 | 10 Segurança (XSS, SQL, CSP, SRI, libs) | a fazer | |
 | 11 LGPD | a fazer | |
 | 12 Hospedagem e operação | a fazer | |
