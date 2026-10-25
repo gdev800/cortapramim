@@ -107,6 +107,36 @@ test('esqueci a senha: mensagem neutra; voltar do e-mail abre "senha nova" e sal
   await fechar();
 });
 
+test('esqueci a senha pelo código: código + senha nova na mesma tela, sem pular para outra', async () => {
+  await page.reload(); await page.waitForFunction(() => window.__pc && window.__pc.state); // zera o "Reenviar em 60s" do teste anterior
+  await abrir(); await page.click('#contaDlg [data-ir="recuperar"]');
+  await page.fill('#ctEmailR', 'gilmar@teste.com'); await page.click('#ctEnviarRec');
+  await page.waitForSelector('#ctRecBox:not([hidden])');
+  await page.fill('#ctCodigoR', '999999'); await page.fill('#ctSenhaR', 'outrasenha1'); await page.fill('#ctSenhaR2', 'outrasenha1');
+  await page.click('#ctSalvarRec');
+  await page.waitForFunction(() => /expirou/.test(document.getElementById('ctMsg').textContent));
+  await page.fill('#ctCodigoR', '123456'); await page.click('#ctSalvarRec');
+  await page.waitForFunction(() => /Senha nova salva/.test(document.getElementById('ctMsg').textContent));
+  assert.equal(await page.isVisible('[data-v="conta"]'), true);
+  const l = await log();
+  assert.deepEqual(l.slice(-2), [['verificar', 'gilmar@teste.com', '123456'], ['nova', 11]]);
+  await page.click('#ctSair'); await fechar();
+});
+
+test('entrar não mostra aviso solto; link do e-mail vencido avisa e limpa o endereço', async () => {
+  await abrir(); await page.fill('#ctEmail', 'gilmar@teste.com'); await page.fill('#ctSenha', 'serragem123');
+  await page.click('#ctFormSenha button[type="submit"]');
+  await page.waitForSelector('[data-v="conta"]:not([hidden])');
+  assert.equal(await page.isVisible('#ctMsg'), false);
+  await page.click('#ctSair'); await fechar();
+  const url = page.url().split('#')[0];
+  await page.goto(url + '#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid');
+  await page.reload(); await page.waitForSelector('#contaDlg[open]');
+  await page.waitForFunction(() => /expirou ou já foi usado/.test(document.getElementById('ctMsg').textContent));
+  assert.equal(await page.evaluate(() => location.hash), '');
+  await fechar();
+});
+
 test('Google chama o provedor certo; o app segue funcionando sem login', async () => {
   await abrir(); await page.click('#ctGoogle');
   await page.waitForFunction(() => window.__fakeLog.some((l) => l[0] === 'oauth'));

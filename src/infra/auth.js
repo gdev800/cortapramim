@@ -31,6 +31,8 @@ export function criarAuth(cliente, loc) {
     enviarCodigo: (email) => rodar(() => a.signInWithOtp({ email, options: { shouldCreateUser: true, emailRedirectTo: volta } })),
     confirmarCodigo: (email, codigo) => rodar(() => a.verifyOtp({ email, token: codigo, type: 'email' })),
     recuperarSenha: (email) => rodar(() => a.resetPasswordForEmail(email, { redirectTo: volta })),
+    /** Código do e-mail de "esqueci a senha": entra na conta para em seguida trocar a senha. */
+    confirmarRecuperacao: (email, codigo) => rodar(() => a.verifyOtp({ email, token: codigo, type: 'recovery' })),
     trocarSenha: (senha) => rodar(() => a.updateUser({ password: senha })),
     sair: () => rodar(() => a.signOut()),
   };

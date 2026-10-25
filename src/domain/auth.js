@@ -70,3 +70,17 @@ export function enderecoDeRetorno(loc) {
   if (!loc || !/^https?:$/.test(loc.protocol)) return undefined;
   return loc.origin + loc.pathname;
 }
+
+/**
+ * Link do e-mail que falhou (expirado, já usado, aberto em outro navegador): o Supabase volta com
+ * #error_code=... ou ?error_code=... no endereço. @returns {string|null} mensagem em português
+ */
+export function erroNoEndereco(loc) {
+  if (!loc) return null;
+  const ler = (t) => new URLSearchParams(String(t || '').replace(/^[#?]/, ''));
+  const h = ler(loc.hash), q = ler(loc.search);
+  const code = h.get('error_code') || q.get('error_code') || '', tem = code || h.get('error') || q.get('error');
+  if (!tem) return null;
+  if (code === 'otp_expired') return 'Esse link do e-mail expirou ou já foi usado. Peça um novo (ou use o código que vem no e-mail).';
+  return 'O link do e-mail não funcionou. Peça um novo (ou use o código que vem no e-mail).';
+}

@@ -70,6 +70,12 @@ O código do login já está no app (`src/infra/auth.js`, `src/ui/components/acc
 3. **Authentication → Emails (templates)**, em português. No modelo **Magic Link**, inclua o código
    `{{ .Token }}`: é ele que o app pede em "Código por e-mail". Exemplo:
    > Seu código para entrar no Corta pra Mim é **{{ .Token }}**. Ele vale por 1 hora. Se não foi você, ignore este e-mail.
+   Inclua `{{ .Token }}` também em **Confirm signup** (primeiro acesso pelo código cai nesse modelo) e em
+   **Reset Password** (o app pede o código + a senha nova na mesma tela). Exemplo de Reset Password:
+   > Seu código para criar uma senha nova é **{{ .Token }}**. Se não foi você, ignore este e-mail.
+
+   Por que código e não só link: Hotmail/Outlook "clicam" nos links para checar vírus e gastam o link de uso único,
+   e o link só funciona no mesmo navegador em que foi pedido. O código não tem esses problemas.
 4. **E-mail de verdade (SMTP)**: o envio padrão do Supabase só entrega para membros da organização e com poucos
    e-mails por hora. Para outras pessoas (Gilmar, clientes), configure um SMTP próprio em
    **Project Settings → Authentication → SMTP** (ex.: Resend, com um domínio seu).

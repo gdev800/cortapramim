@@ -35,9 +35,15 @@
   </form>
 
   <form data-v="recuperar" id="ctFormRec" class="conta-f" novalidate hidden>
-    <p class="hint">Mandamos um link para você criar uma senha nova.</p>
+    <p class="hint">Mandamos um código para o seu e-mail. Com ele você cria uma senha nova aqui mesmo.</p>
     <div class="field"><label for="ctEmailR">E-mail</label><input id="ctEmailR" type="email" autocomplete="email" inputmode="email" required></div>
-    <button type="submit" class="primary">Enviar link</button>
+    <button type="submit" class="primary" id="ctEnviarRec">Enviar código</button>
+    <div id="ctRecBox" class="conta-f" hidden>
+      <div class="field"><label for="ctCodigoR">Código que chegou no e-mail</label><input id="ctCodigoR" inputmode="numeric" autocomplete="one-time-code" maxlength="12"></div>
+      <div class="field"><label for="ctSenhaR">Senha nova (mínimo 8 caracteres)</label><input id="ctSenhaR" type="password" autocomplete="new-password"></div>
+      <div class="field"><label for="ctSenhaR2">Repita a senha nova</label><input id="ctSenhaR2" type="password" autocomplete="new-password"></div>
+      <button type="button" class="primary" id="ctSalvarRec">Salvar senha nova</button>
+    </div>
     <button type="button" class="link" data-ir="entrar">Voltar</button>
   </form>
 

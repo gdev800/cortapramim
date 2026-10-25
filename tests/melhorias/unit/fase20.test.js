@@ -1,7 +1,7 @@
 // Fase 20: login. Validações, tradução de erros e o adaptador do Supabase Auth (com um cliente falso, sem rede).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { validarEmail, validarSenha, validarCodigo, traduzirErro, enderecoDeRetorno, SENHA_MIN } from '../../../src/domain/auth.js';
+import { validarEmail, validarSenha, validarCodigo, traduzirErro, enderecoDeRetorno, erroNoEndereco, SENHA_MIN } from '../../../src/domain/auth.js';
 import { criarAuth } from '../../../src/infra/auth.js';
 import { SUPABASE_URL, SUPABASE_KEY } from '../../../src/infra/supabase/config.js';
 
@@ -96,4 +96,18 @@ test('adaptador: usuário atual e aviso de mudanças (com cancelamento)', async 
   parar(); assert.equal(f.ouvindo(), false);
   const sem = falso({ getSession: new Error('x') });
   assert.equal(await criarAuth(sem.cliente, LOC).usuarioAtual(), null);
+});
+
+test('link do e-mail que falhou: lê o erro do # ou do ?, em português; endereço normal não é erro', () => {
+  assert.match(erroNoEndereco({ hash: '#error=access_denied&error_code=otp_expired&error_description=x', search: '' }), /expirou ou já foi usado/);
+  assert.match(erroNoEndereco({ hash: '', search: '?error=server_error&error_description=x' }), /não funcionou/);
+  assert.equal(erroNoEndereco({ hash: '#montar', search: '' }), null);
+  assert.equal(erroNoEndereco({ hash: '', search: '?code=abc' }), null);
+  assert.equal(erroNoEndereco(null), null);
+});
+
+test('adaptador: código de recuperação usa verifyOtp com type recovery', async () => {
+  const f = falso(), a = criarAuth(f.cliente, LOC);
+  assert.deepEqual(await a.confirmarRecuperacao('a@b.com', '654321'), { ok: true });
+  assert.deepEqual(f.chamadas[0], ['verifyOtp', { email: 'a@b.com', token: '654321', type: 'recovery' }]);
 });
