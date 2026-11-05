@@ -1,16 +1,26 @@
-# Plano de implementação: estoque, histórico, relatório mensal, contas e segurança
+# Plano de implementação: o que já está feito
 
-Feito por partes. Cada parte é independente, cabe numa sessão e termina com testes passando e commit.
-Regras de sempre: mudanças aditivas, sem mudar o comportamento das fases anteriores; testes novos em
-`tests/melhorias/` (unit e e2e); `npm test`, `npm run build`, `npm run test:e2e` antes do commit.
-Para retomar numa sessão nova: "Leia PLANO-IMPLEMENTACAO.md e faça a Parte N".
+Registro das partes entregues, com o que foi feito e onde está no código. O que falta está em
+[A-FAZER.md](A-FAZER.md). Quando uma parte de lá terminar, ela muda para cá (com o resumo do "Feito").
 
-Ordem sugerida: Bloco A (Partes 1 a 6, funções do sistema) e depois Bloco B (Partes 7 a 12, contas e segurança).
-Se o Gilmar precisar compartilhar dados logo, dá para fazer 7 → 8 → 9 antes de 3. A Parte 10 deve estar pronta
-antes de abrir para qualquer pessoa de fora.
+Antes deste plano, as fases 1 a 12 (motor de corte, sobras, etiquetas, PDFs, orçamento, modelos de móvel,
+edição manual do plano etc.) foram feitas como melhorias soltas. Os testes delas estão em `tests/unit/fases/`
+e `tests/e2e/fases/` (`faseN.test.js`).
 
-Analogia do conjunto: hoje o sistema guarda o **saldo** (quanto tem de sobra, fita, ferragem).
-Falta o **extrato** (o que entrou e saiu, quando e em qual projeto). O relatório mensal é o extrato somado.
+Analogia do conjunto: o sistema guardava o **saldo** (quanto tem de sobra, fita, ferragem).
+As Partes 1 a 4 trouxeram o **extrato** (o que entrou e saiu, quando e em qual projeto). O relatório mensal é o extrato somado.
+
+| Parte | Entregue | Observação |
+|---|---|---|
+| 1 Estoque de chapas | sim | |
+| 2 Histórico | sim | |
+| Extra Chapas repetidas | sim | comparação com o LeoPlan |
+| 3 Relatório mensal | sim | |
+| 4 Estoque mínimo | sim | |
+| 7 Supabase e modelo de dados | sim | falta aplicar no projeto real (A-FAZER, "Pendências manuais") |
+| 8 Login | sim | falta configurar o painel (A-FAZER, "Pendências manuais") |
+| 10a Segurança: fronteira, XSS, CSP, libs, CI | sim (05/11/2026) | o restante da Parte 10 está em A-FAZER |
+| Revisão de código e pastas | sim (05/11/2026) | itens maiores ficaram em A-FAZER, "Melhorias de código" |
 
 ---
 
@@ -42,7 +52,7 @@ Falta o **extrato** (o que entrou e saiu, quando e em qual projeto). O relatóri
 Mesmo projeto real (289 peças, 4 materiais, serra 4,6 mm, refilo 5 mm): Leo 16 chapas / 515 cortes; nosso 16 chapas.
 Diferença era a Leo repetir o mesmo desenho em várias chapas. Agora `core/repeat.js` gera desenhos feitos para
 repetir (1/k de cada medida) e aceita só se o total de chapas não aumentar; ajuste "Repetir o mesmo desenho" (padrão ligado).
-No 15 mm: 3 desenhos (4× + 2× + 1×), como a Leo. Testes em `tests/melhorias/*/repetidas.test.js`.
+No 15 mm: 3 desenhos (4× + 2× + 1×), como a Leo. Testes em `tests/unit/fases/repetidas.test.js e tests/e2e/fases/repetidas.test.js`.
 
 ## Parte 3 — Relatório mensal (fase 15)  [x]
 **Objetivo:** somar o histórico por mês.
@@ -66,17 +76,6 @@ PDF em `infra/pdf/monthly.js`. Aproveitamento = soma da área das peças / soma 
 **Feito:** `domain/restock.js` (`definirMinimo`, `abaixoDoMinimo`, `listaDeCompras`, `avisosDoPlano`, `csvCompras`);
 comprar = max(0, plano pede + mínimo − tenho); igual ao mínimo não avisa. Painel `ui/components/shopping` no topo do Estoque,
 campo "mín." em cada insumo, aviso no resultado (`result/MinWarn.js`, some depois de "Atualizar estoque"), PDF em `infra/pdf/shopping.js`.
-
-## Parte 5 — Importar lista de corte do Promob/SketchUp (fase 17)  [ ]
-- Já lemos CSV/XLSX genérico (`infra/xlsx.js`, `linhasParaTexto`). Adicionar reconhecimento das colunas
-  usuais desses programas (quantidade, comprimento, largura, material, espessura, fita por lado).
-- Quando a lista traz material/espessura, separar automaticamente em chapas diferentes.
-- Precisa de um arquivo real exportado pelo Gilmar para testar (pedir antes de começar).
-**Testes:** arquivo de exemplo vira as chapas e peças certas.
-
-## Parte 6 — Exportar para ERP (Omie/Bling) (fase 18)  [ ]
-- CSV do relatório mensal e do custo por projeto no formato de importação de despesas/produtos.
-- Antes: confirmar com o usuário qual ERP usa e baixar o modelo de importação dele.
 
 ## Bloco B — Contas, banco e segurança (para abrir ao público)
 
@@ -119,84 +118,48 @@ real (ou Supabase local via CLI) fica para quando houver rede.
 **Ainda manual (painel):** URLs de retorno, modelo de e-mail com `{{ .Token }}`, SMTP próprio, Google (ver `supabase/README.md`).
 Proteção contra senha vazada exige o plano Pro (fica de fora no Free).
 
-## Parte 9 — Dados na nuvem e oficina compartilhada (fase 21)  [ ]
-- `infra/persistence.js`: modo `supabase` ao lado de `local` e `claude` (o artefato continua usando o banco do claude.ai).
-- Primeiro login: oferece **importar o que está neste navegador** (reaproveita o pacote do backup).
-- Convite: o dono gera um convite por e-mail para o Gilmar entrar na mesma oficina e ver o mesmo estoque e histórico.
-- Gravação com fila e reenvio quando a internet volta; conflito simples (o último salva, com aviso).
-**Pronto quando:** Gabriel e Gilmar, em computadores diferentes, veem o mesmo estoque e o mesmo relatório do mês.
+## Parte 10a — Segurança: fronteira de entrada, XSS, CSP e bibliotecas (fase 22a)  [x]
+**Feito em 05/11/2026.** Analogia: duas travas na mesma porta. A primeira é a conferência na entrada (a fronteira):
+dado de fora só entra com o tipo e o tamanho certos. A segunda é a CSP: mesmo que um texto vire HTML, o navegador não executa script.
+- **Fronteira de entrada** (`src/domain/sanitize.js`, limites em `src/domain/limites.js`, iguais aos `check` do banco):
+  tudo que vem de fora passa por ela antes de entrar no estado: backup `.json`, rascunho e listas do navegador,
+  dados da conta (claude.ai) e listas abertas de CSV/TXT/XLSX. Texto sem caracteres de controle nem marcas de direção,
+  com limite de tamanho; campo de número só com número; ids, tipos e status de uma lista fechada; `__proto__` descartado.
+  O **plano calculado** importado é tipado: só `mat`, `nome`, `proj`, `fitaNome`, `obs`, `origem` são texto; o resto vira número.
+  (Sem isso, um backup adulterado executava script em ~250 pontos do desenho da chapa; o teste de mutação prova.)
+- **XSS corrigido:** espessura da sobra ia crua para a tela (`scraps`), além de `money()` com texto, unidade do insumo
+  (`Needs`) e campos do modelo de móvel. Os 29 `innerHTML` foram auditados um a um.
+- **Lint de segurança** (`eslint.config.js`, `npm run lint`): `no-unsanitized` acusa todo `innerHTML` com valor sem `esc()`;
+  os auditados têm um comentário com o motivo. Um `innerHTML` novo sem revisão quebra o CI. Também proíbe `eval`, `new Function` etc.
+- **Validação dos campos** (`domain/collect.js`, `domain/units.js`): `pIn` aceita só decimal simples (antes aceitava
+  `Infinity`, `1e3`, `0x10`); quantidade só inteira ("2a" não vira 2); medida mínima de 1 mm; chapa até 10 m; espessura
+  de 0 a 100 mm. Preço, fita e estoque inválidos avisam e valem 0. Peça maior que a chapa continua com "não cabe na chapa".
+- **Bibliotecas sem CDN:** jsPDF 4.2.1 e jspdf-autotable 5.0.9 (as 2.5.1/3.5.31 tinham falha crítica) e a SheetJS 0.18.5
+  (prototype pollution e ReDoS, sem correção no npm) trocada pela `read-excel-file` 9.3.14, mantida. Tudo embutido no build
+  com versão fixa: não há mais script de terceiro carregado em tempo de execução, então o SRI deixa de ser necessário.
+  `npm audit`: 0 falhas. Consequência: `.xls` (Excel 97-2003) não abre mais; o app pede para salvar como `.xlsx` ou CSV.
+- **CSP** no próprio HTML do site (`scripts/build.mjs`): só roda o script cujo hash está na política; `object-src`,
+  `base-uri`, `form-action` e `frame-src` fechados; conexão só com o Supabase do projeto. O build do claude.ai
+  (`npm run build:artefato`) sai sem CSP, porque a plataforma injeta os próprios scripts.
+  O site também ganhou `<!doctype html>`, `charset` e `viewport` (antes abria em modo de compatibilidade e sem ajuste no celular).
+- **Limites de arquivo:** backup até 20 MB, CSV/TXT até 2 MB, XLSX até 5 MB e 5.000 linhas.
+- **DOM clobbering:** a detecção do claude.ai e o Supabase falso dos testes só aceitam objetos de verdade
+  (um `<a id="claude">` injetado não engana mais o app).
+- **Banco** (`supabase/migrations/002_endurecimento.sql`): histórico vira extrato (membro lê e registra; ninguém edita;
+  apaga só o próprio lançamento, o dono apaga qualquer um; nova coluna `criado_por`) e limite de tamanho no JSON
+  (entrada do projeto 1 MB, plano 2 MB, listas do histórico 64 KB). 11 testes novos em `supabase/tests/rls_002.test.sql`.
+- **CI** (`.github/workflows/pages.yml`): lint, `npm audit`, unitários, build, e2e, RLS e varredura de segredos (gitleaks)
+  antes de publicar; publica só da main. CodeQL (`codeql.yml`) e Dependabot (`dependabot.yml`).
+- **Bug corrigido no caminho:** abrir um projeto salvo com plano mostrava o desenho do trabalho anterior
+  (só o estado mudava). Agora o desenho, o resumo e as compras redesenham ao carregar. Teste em `tests/e2e/base/abrir-projeto.test.js`.
+**Testes:** `tests/unit/seguranca/` (fronteira e campos, 26 testes) e `tests/e2e/seguranca/injecao.test.js` (6 cenários:
+todos os campos, lista colada, planilha `.xlsx` real, backup adulterado com o plano, rascunho no navegador e CSP).
+Os ataques rodam na versão sem CSP, para medir o escape de verdade. Verificado também: o leitor de lista colada não tem ReDoS
+(linha de 40 mil caracteres em 4 ms).
 
-## Parte 9b — Plano de corte compartilhado por link e acompanhamento da execução (fase 21b)  [ ]
-**Pedido do Gabriel (21/10):** salvar o plano no sistema, mandar um link para alguém da equipe abrir,
-acompanhar em que etapa ele está e o dono da marcenaria ver tudo num painel.
-**Depende de:** Partes 7 e 8 configuradas no Supabase + Parte 9 (dados na nuvem). Pode passar na frente
-das Partes 5, 6, 10, 11 e 12; a segurança do link (abaixo) é feita aqui mesmo, sem esperar a Parte 10.
-- **Plano salvo no banco:** tabela `planos` (oficina_id, projeto, plano calculado em JSON, criado_por, criado_em,
-  `etapa`, `atualizado_em`). Ao aprovar o plano, ele é gravado; o mesmo plano pode ser aberto quantas vezes quiser.
-- **Etapas do corte** (além do status do projeto que já existe): Aguardando corte → Em corte → Cortado → Conferido
-  (e Cancelado). Dentro de "Em corte", marcar **chapa por chapa** ("chapa 3 de 7 cortada"), com quem marcou e quando.
-  Tabela `plano_eventos` (quem, quando, o que mudou): é o extrato da execução, igual ao histórico do estoque.
-- **Link para a equipe, dois tipos:**
-  1. *Convite de uso único:* o link vale uma vez e por prazo curto (ex.: 48 h). Quem abre faz login e passa a
-     enxergar aquele plano (ou a oficina) para sempre pela própria conta. Depois de usado, o link morre.
-  2. *Link da serra (opcional):* para o operador sem conta. Só vê o plano e marca chapas como cortadas;
-     não vê custos nem outros projetos; expira; o dono pode revogar.
-  O link guarda só um código aleatório longo; o banco guarda o **hash** do código, a validade, o tipo e se já foi usado.
-  A validação é uma função no banco (RPC) com parâmetros, sem SQL montado com texto; RLS continua valendo para tudo.
-- **Painel do dono:** lista dos planos com etapa, progresso (chapas cortadas / total), responsável e última mudança;
-  filtros por etapa e por mês; cada plano abre com a linha do tempo dos eventos.
-- **Integração com o que já existe:** quando o plano chega em "Cortado", oferece o "Atualizar estoque"
-  (saída no histórico); o relatório mensal passa a poder contar só planos cortados.
-**Testes:** RLS (membro de outra oficina não vê o plano; link expirado/usado/revogado não abre; link da serra não
-vê custos), etapas e progresso, linha do tempo, e2e do fluxo criar → compartilhar → marcar chapas → painel.
-**Pronto quando:** Gabriel aprova um plano, manda o link ao Gilmar, o Gilmar marca as chapas na serra e o painel do
-Gabriel mostra "Em corte · 3 de 7 chapas" e depois "Cortado", sem precisar trocar arquivo.
-
-## Parte 10 — Segurança da aplicação (fase 22)  [ ]
-- **Injeção de HTML/script (XSS):** a tela monta HTML com texto. Revisar todo `innerHTML` e garantir `esc()` em
-  qualquer dado digitado (nome de peça, projeto, cliente, material); teste que tenta `<img onerror>` em cada campo.
-- **Injeção de SQL:** só acesso por `supabase-js` (consultas parametrizadas) e funções SQL com parâmetros;
-  proibido montar SQL com texto concatenado. Funções `security definer` só quando necessário e com `search_path` fixo.
-- **CSP** (política de conteúdo): só scripts do próprio site e do CDN usado; bloqueia script injetado.
-- **Bibliotecas do CDN com SRI** (hash de integridade) e versões fixas.
-- **xlsx 0.18.5 tem falhas conhecidas** (prototype pollution e ReDoS): atualizar para a versão corrigida do SheetJS
-  (distribuída pelo CDN deles) ou trocar a leitura de .xlsx por outra lib mantida; limitar tamanho do arquivo lido.
-- **Dependências:** `npm audit` no CI, Dependabot e CodeQL no GitHub (alertas de libs e de código).
-- **Segredos:** só a chave pública (anon) no front; chave de serviço nunca no repositório (`.gitignore` + varredura de segredos no CI).
-- Limites: tamanho de texto/arquivo importado, quantidade de peças (já existe), tentativas de login (Supabase).
-
-## Parte 11 — LGPD (fase 23)  [ ]
-(Orientação técnica, não jurídica; vale revisar com um advogado antes de vender.)
-- **Política de privacidade** e **termos de uso** na tela de login: quais dados (nome, e-mail, dados de clientes nas
-  propostas), para quê, onde ficam (Supabase, São Paulo), por quanto tempo, com quem são compartilhados (Google, se usar login Google).
-- **Base legal:** execução de contrato para operar a conta; consentimento separado só se um dia houver e-mail de marketing.
-- **Direitos do titular dentro do app:** baixar meus dados (o backup já faz) e **excluir minha conta** (apaga dados e oficina se for o único dono).
-- **Minimização:** não pedir CPF/endereço; dados do cliente final só o necessário para a proposta.
-- **Canal de contato** para pedidos de titulares (pequeno porte pode dispensar encarregado formal, mas precisa do canal).
-- **Incidentes:** registro de acesso (logs do Supabase), plano simples de resposta e comunicação à ANPD e aos titulares se houver vazamento.
-- Retenção: definir prazo para contas inativas e para logs.
-
-## Parte 12 — Hospedagem e operação (fase 24)  [ ]
-- Sair do GitHub Pages para **Cloudflare Pages** (ou Vercel): permite cabeçalhos de segurança (CSP, HSTS,
-  X-Frame-Options), domínio próprio com HTTPS e deploy pelo mesmo GitHub Actions.
-- Ambiente de **homologação** separado do de produção (dois projetos Supabase).
-- Backup automático do banco (plano pago do Supabase ou exportação agendada) e teste de restauração.
-
----
-
-## Andamento
-| Parte | Estado | Commit |
-|---|---|---|
-| 1 Estoque de chapas | feito | (ver git log) |
-| 2 Histórico | feito | (ver git log) |
-| 3 Relatório mensal | feito | (ver git log) |
-| 4 Estoque mínimo | feito | (ver git log) |
-| 5 Importar Promob/SketchUp | adiada (falta um arquivo real exportado pelo Gilmar) | |
-| 6 Exportar ERP | a fazer | |
-| 7 Supabase e modelo de dados | feito (falta aplicar no projeto real) | (ver git log) |
-| 8 Login Google / e-mail e senha / código | feito (falta configurar o painel) | (ver git log) |
-| 9 Dados na nuvem e oficina compartilhada | a fazer | |
-| 9b Plano por link e acompanhamento | a fazer (depois de 7, 8 e 9) | |
-| 10 Segurança (XSS, SQL, CSP, SRI, libs) | a fazer | |
-| 11 LGPD | a fazer | |
-| 12 Hospedagem e operação | a fazer | |
+## Revisão de código e pastas (05/11/2026)  [x]
+- Documentação em `docs/` (`ARQUITETURA.md`, `SEGURANCA.md`, `plano/`). O plano foi dividido em feito e a fazer.
+- Testes por assunto: `tests/unit/{base,fases,seguranca}` e `tests/e2e/{base,fases,seguranca}` (a pasta `melhorias` saiu).
+- Função pura `linhasParaTexto` saiu da infra para `domain/planilha.js` (a infra só lê o arquivo).
+- Imports e variáveis sem uso removidos (lint); `.DS_Store` saiu do repositório; `.gitignore` cobre `.env`, chaves e PDFs.
+- Saída do build renomeada para `dist/cortapramim.html`.

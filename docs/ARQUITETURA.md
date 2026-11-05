@@ -1,6 +1,6 @@
 # Arquitetura
 
-## Camadas (cada uma só enxerga a de baixo)
+## Camadas (cada uma só usa as de baixo, nunca as de cima)
 
 ```
 ui/       telas e eventos (DOM)
@@ -13,7 +13,9 @@ Analogia: `core` é o motor do carro, `domain` o painel de regras (pode ou não 
 
 - **core**: `planejar()` recebe grupos de peças e devolve chapas, cortes e sobras. Testável em Node.
 - **domain**: `coletar(state)`, `custos()`, `necessidades()`, `trocarUnidade()` etc. Nada de `document`.
-- **infra**: `persistence` (conta na nuvem ou navegador), `pdf/*`, `xlsx`, `raster`.
+  `sanitize.js` é a **fronteira de entrada** (tudo que vem de fora passa por ela) e `limites.js` guarda os limites,
+  iguais aos do banco. `planilha.js` interpreta as linhas de uma planilha (a leitura do arquivo fica na infra).
+- **infra**: `persistence` (conta na nuvem ou navegador, sempre limpando o que lê), `pdf/*`, `xlsx` (lê `.xlsx`), `raster`.
   `auth` + `supabase/` (login com Supabase Auth, só fora do claude.ai; `ctx.auth` e evento `auth` no barramento).
 - **ui**: `context` (estado, barramento, serviços), `app` (monta a página), `components/*`.
 
@@ -75,16 +77,42 @@ Cada componente exporta `{ template(ctx), mount(ctx) }`:
 ## Estado
 
 Um único objeto `state` (formato em `domain/state.js`). Só `domain/` e os componentes o alteram; depois de alterar, emitem o evento certo.
+Tudo que entra no estado vindo de fora (`restore`, backup, listas guardadas) passa antes por `domain/sanitize.js`. Veja `SEGURANCA.md`.
 
 ## Build
 
-`scripts/build.mjs` usa esbuild: junta JS e CSS e embute tudo em `dist/plano-corte-mdf.html`. Bibliotecas de PDF e Excel vêm de CDN (tags no `src/index.template.html`).
+`scripts/build.mjs` usa esbuild: junta JS, CSS e as bibliotecas (jsPDF, leitor de Excel, Supabase, todas do `node_modules`
+com versão fixa) num arquivo só.
+- `npm run build` → `dist/cortapramim.html`, o site: com `<!doctype>`, `viewport` e CSP com o hash do script.
+- `npm run build:artefato` → `dist/cortapramim-artefato.html`, para o claude.ai: sem CSP (a plataforma injeta scripts).
+
+## Pastas
+
+```
+src/
+  core/        motor de corte (Node e navegador)
+  domain/      regras puras; sanitize.js (fronteira) e limites.js
+  infra/       navegador, conta, Supabase, PDF, Excel
+  ui/          contexto, barramento e components/<cartão>/{index.js, template.html, *.css}
+  styles/      tokens e estilos globais
+tests/
+  unit/        base/ (core e domain), fases/ (uma por fase do plano), seguranca/
+  e2e/         helpers.js; base/, fases/, seguranca/ (Playwright contra o dist)
+supabase/      migrations/ (001, 002...) e tests/ (RLS em Postgres local)
+docs/          ARQUITETURA.md, SEGURANCA.md, plano/IMPLEMENTADO.md e plano/A-FAZER.md
+scripts/       build.mjs
+```
 
 ## Testes
 
-- `tests/unit`: core e domain, sem navegador.
+- `tests/unit`: core e domain, sem navegador (`npm test`).
 - `tests/e2e`: abre o `dist` no navegador, mexe nos botões e confere o resultado. Usa `window.__pc` (`state`, `coletar`, `calcular`) como atalho.
+- `tests/*/seguranca`: fronteira, validação dos campos e injeção de script por todos os caminhos (`npm run test:seguranca`).
+- `npm run lint`: regras de código e de segurança (todo `innerHTML` com valor variável precisa de `esc()`).
+- `supabase/tests`: RLS (`npm run test:rls`).
 
-## Rumo ao público (ainda não feito)
+## Rumo ao público
 
-Falta: login, banco no servidor (hoje: navegador ou conta da plataforma), hospedagem, política de privacidade. A camada `infra/persistence.js` já isola o armazenamento, então trocar por uma API não mexe em `domain/` nem nos componentes.
+Login (Parte 8) e banco com RLS (Parte 7) prontos; falta ligar os dados na nuvem (Parte 9), hospedagem com cabeçalhos HTTP
+(Parte 12) e LGPD (Parte 11). A camada `infra/persistence.js` já isola o armazenamento, então trocar por uma API não mexe em
+`domain/` nem nos componentes. Veja `plano/A-FAZER.md`.
