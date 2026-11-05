@@ -1,0 +1,9 @@
+# Varredura de segredos (gitleaks). Usa as regras padrão e libera só a chave PUBLICÁVEL do Supabase,
+# que é pública por natureza (vai no navegador); quem protege os dados é o RLS.
+# A liberação é pelo formato da chave, não pelo arquivo: uma chave secreta colada no config.js continua sendo pega.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Chave publicável do Supabase"
+regexes = ['''sb_publishable_[A-Za-z0-9_-]+''']

@@ -1,0 +1,17 @@
+# Pull requests automáticos quando sai versão nova (ou correção de falha) das dependências e das actions.
+# Cada PR passa pelo CI inteiro antes de você aceitar.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      ferramentas-de-teste:
+        patterns: ['eslint*', '@eslint/*', 'globals', 'playwright', 'esbuild']
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

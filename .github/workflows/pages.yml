@@ -1,31 +1,26 @@
-# Publica o Plano de Corte MDF no GitHub Pages a cada push na main.
-# Testa, compila e entrega o arquivo único como index.html.
-name: Publicar no GitHub Pages
+# Verifica e publica o Corta pra Mim.
+# Em todo push e pull request: lint (inclui a regra de innerHTML), auditoria de dependências, testes unitários,
+# build, testes no navegador (e2e, inclusive os de injeção), testes de RLS do banco e varredura de segredos.
+# Só publica no GitHub Pages quando tudo passa, e só a partir da main.
+name: Verificar e publicar
 
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
-
 jobs:
-  publicar:
+  verificar:
     # versão fixa: o ubuntu-latest muda para o Ubuntu 26 em 19/10/2026; trocar quando quiser, testando antes
     runs-on: ubuntu-24.04
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -33,14 +28,64 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Lint (código e segurança)
+        run: npm run lint
+      - name: Auditoria de dependências (falha em alta ou crítica)
+        run: npm run audit
       - name: Testes unitários
         run: npm test
-      - name: Compilar
-        run: npm run build
+      - name: Compilar (site e artefato)
+        run: npm run build && npm run build:artefato
+      - name: Navegador para os testes
+        run: npx playwright install --with-deps chromium
+      - name: Testes no navegador (e2e)
+        run: npm run test:e2e
+      - uses: actions/upload-artifact@v5
+        with:
+          name: site-${{ github.run_attempt }}
+          path: dist/cortapramim.html
+          retention-days: 7
+
+  banco:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: Testes de RLS (Postgres 16 da imagem do runner)
+        run: PG_BIN=/usr/lib/postgresql/16/bin bash supabase/tests/run-local.sh
+
+  segredos:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Varredura de segredos (chaves, tokens, senhas no histórico)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publicar:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: [verificar, banco, segredos]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: true
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          name: site-${{ github.run_attempt }}
       - name: Montar a pasta do site
         run: |
           mkdir _site
-          cp dist/plano-corte-mdf.html _site/index.html
+          cp cortapramim.html _site/index.html
           touch _site/.nojekyll
       - uses: actions/configure-pages@v6
       # nome com o número da tentativa: "Re-run" não encontra dois artefatos com o mesmo nome
