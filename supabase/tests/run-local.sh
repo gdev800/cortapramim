@@ -13,4 +13,4 @@ P=(psql -X -q -v ON_ERROR_STOP=1 -h "$TMP" -p "$PORT" -d postgres)
 "${P[@]}" -U superusuario -f supabase/tests/000_stub_supabase.sql
 "${P[@]}" -U superusuario -c "create role dono_tabelas login createrole; grant create on database postgres to dono_tabelas; grant all on schema public to dono_tabelas; grant usage on schema auth to dono_tabelas; grant select, references on auth.users to dono_tabelas; grant anon, authenticated to dono_tabelas;"
 for f in supabase/migrations/*.sql; do echo "migração: $f"; "${P[@]}" -U dono_tabelas -f "$f"; done
-"${P[@]}" -U superusuario -o /dev/null -f supabase/tests/rls.test.sql 2>&1 | sed 's/^psql:[^ ]* NOTICE:  /  /'
+for t in supabase/tests/rls*.test.sql; do echo "testes: $t"; "${P[@]}" -U superusuario -o /dev/null -f "$t" 2>&1 | sed 's/^psql:[^ ]* NOTICE:  /  /'; done
