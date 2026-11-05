@@ -46,7 +46,7 @@ jobs:
         run: |
           node scripts/anotar-falhas.mjs unit.tap "Unitário"
           node scripts/anotar-falhas.mjs e2e.tap "Navegador"
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: site-${{ github.run_attempt }}
           path: dist/cortapramim.html
