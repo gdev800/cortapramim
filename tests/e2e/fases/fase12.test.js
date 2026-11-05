@@ -1,7 +1,7 @@
 // Fase 12: depois de aprovar, os botões baixam os arquivos de verdade num navegador comum (GitHub Pages).
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { abrirApp } from '../../e2e/helpers.js';
+import { abrirApp } from '../helpers.js';
 
 let app, page;
 before(async () => { app = await abrirApp(); page = app.page; await page.click('#btnAprovar'); await page.waitForSelector('#exportBox:not([hidden])'); });

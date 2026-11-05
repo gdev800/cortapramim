@@ -14,6 +14,7 @@ export default {
     const modelo = () => (state.model ? modeloPorId(state.model.id) : null);
 
     function renderCards() {
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       $('modelCards').innerHTML = MODELOS.map((m) =>
         '<button type="button" class="mcard" data-m="' + m.id + '" aria-pressed="' + (!!state.model && state.model.id === m.id) + '"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICON[m.id] + '</svg><b>' + m.nome + '</b><small>' + m.desc + '</small></button>').join('');
     }
@@ -25,7 +26,7 @@ export default {
       let h = '<div class="grid">';
       m.campos.forEach((c) => {
         if (c.t === 'bool') h += '<label class="check" style="align-self:end;min-height:46px"><input type="checkbox" data-mk="' + c.k + '"' + (v[c.k] ? ' checked' : '') + '> ' + c.l + '</label>';
-        else h += '<div class="field"><label for="mk_' + c.k + '">' + c.l + (c.t === 'dim' ? ' (' + un + ')' : '') + '</label><input id="mk_' + c.k + '" data-mk="' + c.k + '" inputmode="' + (c.t === 'int' ? 'numeric' : 'decimal') + '" value="' + (c.opt && !v[c.k] ? '' : (c.t === 'dim' ? toStr(v[c.k] / F) : v[c.k])) + '"' + (c.opt ? ' placeholder="Automático"' : '') + '></div>';
+        else h += '<div class="field"><label for="mk_' + c.k + '">' + c.l + (c.t === 'dim' ? ' (' + un + ')' : '') + '</label><input id="mk_' + c.k + '" data-mk="' + c.k + '" inputmode="' + (c.t === 'int' ? 'numeric' : 'decimal') + '" value="' + (c.opt && !v[c.k] ? '' : (c.t === 'dim' ? toStr(v[c.k] / F) : esc(v[c.k]))) + '"' + (c.opt ? ' placeholder="Automático"' : '') + '></div>';
       });
       h += '</div><div class="grid">' +
         '<div class="field"><label for="mdEsp">Espessura do MDF do corpo (mm)</label><input id="mdEsp" list="dlEsp" inputmode="decimal" value="' + esc(state.model.esp) + '"></div>' +
@@ -36,17 +37,19 @@ export default {
         '<div id="mdPrev"></div>' +
         '<div class="row"><button type="button" id="btnModeloAdd" class="brass big">Adicionar ao projeto</button><button type="button" id="btnModeloFechar">Fechar</button></div>' +
         '<p class="hint">As peças entram na lista da chapa e você pode editar qualquer medida. As folgas são padrões comuns: 4 mm no fundo, 3 mm entre portas, recuo de prateleira informado acima. Ajuste ao seu método de montagem.</p>';
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       box.innerHTML = h; box.hidden = false; renderPrev();
     }
 
     function renderPrev() {
       const el = $('mdPrev'); if (!el) return;
       const r = gerarModelo(state.model);
-      if (r.erro) { el.innerHTML = '<p class="msg err">' + r.erro + '</p>'; $('btnModeloAdd').disabled = true; return; }
+      if (r.erro) { el.innerHTML = '<p class="msg err">' + esc(r.erro) + '</p>'; $('btnModeloAdd').disabled = true; return; }
       $('btnModeloAdd').disabled = false;
       let n = 0, a = 0; r.pecas.forEach((p) => { n += p.q; a += p.q * p.c * p.l; });
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       el.innerHTML = '<div class="label">Peças geradas · ' + n + ' no total · ' + (Math.round(a / 1e4) / 100).toString().replace('.', ',') + ' m² de peças</div><div class="tbl"><table><thead><tr><th>Qtde</th><th>C × L (' + state.unit + ')</th><th>Peça</th><th>Chapa</th></tr></thead><tbody>' +
-        r.pecas.map((p) => '<tr><td>' + p.q + '</td><td>' + ctx.fu(p.c) + ' × ' + ctx.fu(p.l) + '</td><td class="n">' + esc(p.n) + ((p.fc || p.fl) ? ' <span class="hint">· fita</span>' : '') + '</td><td class="n">' + (p.mat === 'fundo' ? '6 mm' : esc(state.model.esp) + ' mm') + '</td></tr>').join('') + '</tbody></table></div>';
+        r.pecas.map((p) => '<tr><td>' + esc(p.q) + '</td><td>' + ctx.fu(p.c) + ' × ' + ctx.fu(p.l) + '</td><td class="n">' + esc(p.n) + ((p.fc || p.fl) ? ' <span class="hint">· fita</span>' : '') + '</td><td class="n">' + (p.mat === 'fundo' ? '6 mm' : esc(state.model.esp) + ' mm') + '</td></tr>').join('') + '</tbody></table></div>';
     }
 
     $('modelCards').addEventListener('click', (ev) => {

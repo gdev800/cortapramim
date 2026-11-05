@@ -9,8 +9,9 @@ export default {
     const { state, bus } = ctx;
 
     function render() {
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       $('ferrRows').innerHTML = state.ferr.map((f) =>
-        '<div class="frow" data-f="' + f.uid + '"><input data-k="n" placeholder="Item (ex.: Dobradiça 35 mm)" value="' + esc(f.n) + '" aria-label="Item de ferragem"><input data-k="q" inputmode="numeric" placeholder="Qtde" value="' + esc(f.q) + '" aria-label="Quantidade"><input data-k="p" inputmode="decimal" placeholder="R$ un." value="' + esc(f.p) + '" aria-label="Preço unitário"><button type="button" class="del" data-del="' + f.uid + '" aria-label="Remover item">×</button></div>').join('');
+        '<div class="frow" data-f="' + f.uid + '"><input data-k="n" maxlength="200" placeholder="Item (ex.: Dobradiça 35 mm)" value="' + esc(f.n) + '" aria-label="Item de ferragem"><input data-k="q" inputmode="numeric" placeholder="Qtde" value="' + esc(f.q) + '" aria-label="Quantidade"><input data-k="p" inputmode="decimal" placeholder="R$ un." value="' + esc(f.p) + '" aria-label="Preço unitário"><button type="button" class="del" data-del="' + f.uid + '" aria-label="Remover item">×</button></div>').join('');
     }
     const sync = () => { render(); $('orcMao').value = state.orc.mao; $('orcMargem').value = state.orc.margem; };
 

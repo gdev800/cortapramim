@@ -2,7 +2,6 @@
 import { coletar } from '../domain/collect.js';
 import { detectarBackend, detectarDownloads } from '../infra/platform.js';
 import { createContext } from './context.js';
-import { $ } from './dom.js';
 import Nav from './components/nav/index.js';
 import Hero from './components/hero/index.js';
 import Bento from './components/bento/index.js';
@@ -43,6 +42,7 @@ export async function startApp(root) {
   if (loginDisponivel()) { try { ctx.auth = criarAuth(obterCliente(), window.location); } catch (e) { ctx.auth = null; } }
   const { state, bus, pers } = ctx;
 
+  // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
   root.innerHTML = Nav.template(ctx) + '<main class="wrap" id="topo">' +
     PAGINA.map((p) => (p.c ? p.c.template(ctx) : p.html)).join('\n') + Datalists.template() + '</main>' + Dock.template();
   todos.forEach((c) => c.mount(ctx));

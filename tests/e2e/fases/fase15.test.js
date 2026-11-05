@@ -2,7 +2,7 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { abrirApp } from '../../e2e/helpers.js';
+import { abrirApp } from '../helpers.js';
 
 let app, page;
 before(async () => { app = await abrirApp(); page = app.page; await page.evaluate(() => { document.getElementById('sobras').open = true; }); });
@@ -59,7 +59,7 @@ test('CSV (com acentos) e PDF baixam', async () => {
   const csv = await baixa('#btnRelCsv');
   assert.equal(csv.suggestedFilename(), 'relatorio-' + mesAtual() + '.csv');
   const txt = await readFile(await csv.path(), 'utf8');
-  assert.match(txt, /^﻿Relatório do mês;/);
+  assert.match(txt, /^\uFEFFRelatório do mês;/);
   assert.match(txt, /Peças cortadas;\d+/);
   const pdf = await baixa('#btnRelPdf');
   assert.equal(pdf.suggestedFilename(), 'relatorio-' + mesAtual() + '.pdf');

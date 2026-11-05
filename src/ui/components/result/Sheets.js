@@ -44,9 +44,11 @@ export default {
           s.cortes.map((cc, i) => '<tr><td>' + (i + 1) + '</td><td>' + (cc.tipo === 'V' ? 'Vertical' : 'Horizontal') + '</td><td>' + fu(cc.pos) + '</td><td>' + fu(cc.ini) + '</td><td>' + fu(cc.fim) + '</td>' + (s.cfg.fases ? '<td>' + cc.fase + '</td>' : '') + '</tr>').join('') +
           '</tbody></table></div></details></article>';
       }));
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       $('sheets').innerHTML = h;
       document.querySelectorAll('#sheets details.ed').forEach((d) => { if (abertos.has(d.dataset.edSheet)) d.open = true; });
     }
-    bus.on('result', render); bus.on('unit', render);
+    // 'loaded': ao abrir um projeto salvo com plano, a tela mostra o plano dele (antes ficava o desenho do trabalho anterior)
+    bus.on('result', render); bus.on('unit', render); bus.on('loaded', render);
   },
 };

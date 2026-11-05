@@ -1,7 +1,7 @@
 // Fase 5 no navegador: clicar na chapa abre a visão ampliada com todos os retalhos e o botão de guardar.
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { abrirApp } from '../../e2e/helpers.js';
+import { abrirApp } from '../helpers.js';
 
 let app, page;
 before(async () => { app = await abrirApp(); page = app.page; });

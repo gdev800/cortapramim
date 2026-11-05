@@ -6,17 +6,25 @@
   "description": "Plano de corte para marcenaria: otimiza chapas de MDF, reaproveita sobras e gera etiquetas, PDFs e orçamento.",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node --test \"tests/unit/*.test.js\" \"tests/melhorias/unit/*.test.js\"",
-    "test:e2e": "node --test --test-timeout=600000 \"tests/e2e/*.test.js\" \"tests/melhorias/e2e/*.test.js\"",
-    "test:all": "npm run test && npm run build && npm run test:e2e",
-    "test:rls": "bash supabase/tests/run-local.sh"
+    "build:artefato": "node scripts/build.mjs --artefato",
+    "lint": "eslint src tests scripts",
+    "test": "node --test \"tests/unit/**/*.test.js\"",
+    "test:e2e": "node --test --test-timeout=600000 \"tests/e2e/**/*.test.js\"",
+    "test:seguranca": "node --test --test-timeout=600000 \"tests/unit/seguranca/*.test.js\" \"tests/e2e/seguranca/*.test.js\"",
+    "test:all": "npm run lint && npm run test && npm run build && npm run test:e2e",
+    "test:rls": "bash supabase/tests/run-local.sh",
+    "audit": "npm audit --audit-level=high"
   },
   "devDependencies": {
+    "@eslint/js": "9.39.1",
     "esbuild": "^0.25.12",
-    "jspdf": "2.5.1",
-    "jspdf-autotable": "3.5.31",
+    "eslint": "9.39.1",
+    "eslint-plugin-no-unsanitized": "4.1.4",
+    "globals": "16.5.0",
+    "jspdf": "4.2.1",
+    "jspdf-autotable": "5.0.9",
     "playwright": "^1.50.0",
-    "xlsx": "0.18.5"
+    "read-excel-file": "9.3.14"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.117.2"

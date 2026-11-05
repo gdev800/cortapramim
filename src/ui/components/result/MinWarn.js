@@ -8,6 +8,7 @@ export default {
     function render() {
       const box = $('avisoMin'), a = state.res && !state.estAtual ? avisosDoPlano(state, state.res) : [];
       if (!a.length) { box.hidden = true; box.innerHTML = ''; return; }
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       box.innerHTML = '<div class="label" style="margin-bottom:6px">Abaixo do estoque mínimo</div>' + a.map((t) => '<p class="msg warn">' + esc(t) + '</p>').join('') +
         '<p class="hint">A lista de compras completa fica no Estoque.</p>';
       box.hidden = false;

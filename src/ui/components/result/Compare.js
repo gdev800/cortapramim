@@ -26,6 +26,7 @@ export default {
       state.running = false; $('btnCmp').disabled = false;
       if (cen.length < 2) { out.innerHTML = '<p class="hint">Não há outro cenário para comparar. O plano já usa as opções que você definiu.</p>'; return; }
       const melhor = melhorCenario(cen);
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       out.innerHTML = '<div class="tbl"><table><thead><tr><th>Cenário</th><th>Chapas novas</th><th>Sobras</th><th>Aproveit.</th><th>Maior retalho</th><th>Chapas (R$)</th><th></th></tr></thead><tbody>' +
         cen.map((c) => '<tr><td class="n"><b>' + esc(c.nome) + '</b>' + (c === melhor ? ' <span class="tag">melhor</span>' : '') + '</td><td>' + c.r.nov + '</td><td>' + c.r.sob + '</td><td>' + pct(c.r.util) + '%</td><td>' + (c.r.maior ? fu(c.r.maior.w) + '×' + fu(c.r.maior.h) : '—') + '</td><td>' + (c.r.custo > 0 ? money(c.r.custo) : '—') + '</td><td>' + (c.id === 'atual' ? '' : '<button type="button" data-cmp="' + c.id + '">Usar este</button>') + '</td></tr>').join('') +
         '</tbody></table></div>' + (pos.giro ? '<p class="hint" style="margin-top:8px">Atenção: "podem girar" ignora o veio. Só use com material liso ou se o veio aceitar peças viradas.</p>' : '');

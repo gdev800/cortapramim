@@ -1,18 +1,18 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, newBlock } from '../../src/domain/state.js';
-import { restore, snapshot, EXEMPLO } from '../../src/domain/snapshot.js';
-import { coletar, MAX_POR_LINHA } from '../../src/domain/collect.js';
-import { trocarUnidade } from '../../src/domain/unit-change.js';
-import { pIn, toStr, slug, money } from '../../src/domain/units.js';
-import { adicionarInsumo, definirQuantidade, insumoValido } from '../../src/domain/supplies.js';
-import { cadastrarSobra, sobrasDoBloco } from '../../src/domain/scraps.js';
-import { custos } from '../../src/domain/costs.js';
-import { tempoSegundos, cfgDoMotor } from '../../src/domain/estimate.js';
-import { MODELOS, abrirModelo, gerarModelo } from '../../src/domain/models/index.js';
-import { lerPacote, montarPacote } from '../../src/domain/backup.js';
-import { resumoAndamento, stNome } from '../../src/domain/status.js';
-import { linhasParaTexto } from '../../src/infra/xlsx.js';
+import { createState, newBlock } from '../../../src/domain/state.js';
+import { restore, snapshot, EXEMPLO } from '../../../src/domain/snapshot.js';
+import { coletar, MAX_POR_LINHA } from '../../../src/domain/collect.js';
+import { trocarUnidade } from '../../../src/domain/unit-change.js';
+import { pIn, toStr, slug, money } from '../../../src/domain/units.js';
+import { adicionarInsumo, definirQuantidade, insumoValido } from '../../../src/domain/supplies.js';
+import { cadastrarSobra, sobrasDoBloco } from '../../../src/domain/scraps.js';
+import { custos } from '../../../src/domain/costs.js';
+import { tempoSegundos, cfgDoMotor } from '../../../src/domain/estimate.js';
+import { MODELOS, abrirModelo, gerarModelo } from '../../../src/domain/models/index.js';
+import { lerPacote, montarPacote } from '../../../src/domain/backup.js';
+import { resumoAndamento, stNome } from '../../../src/domain/status.js';
+import { linhasParaTexto } from '../../../src/domain/planilha.js';
 
 const novo = () => { const s = createState(); restore(s, EXEMPLO); return s; };
 
@@ -80,7 +80,6 @@ test('custos sem margem não gera preço de venda', () => {
 });
 
 test('todos os modelos geram peças', () => {
-  const s = createState();
   MODELOS.forEach((m) => {
     const model = abrirModelo(m);
     const g = gerarModelo(model);

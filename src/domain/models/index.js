@@ -43,7 +43,7 @@ export function gerarModelo(model) {
 
 function adicionarEmBloco(state, nome, esp, veio, pecas, pref) {
   if (!pecas.length) return;
-  const { fromMm, fac } = fmtFor(state.unit);
+  const { fromMm } = fmtFor(state.unit);
   const linhas = pecas.map((p) => ({ q: p.q, c: fromMm(p.c), l: fromMm(p.l), n: (pref ? pref + ' · ' : '') + p.n, fc: p.fc || 0, fl: p.fl || 0, open: !!(p.fc || p.fl) }));
   let b = state.blocks.find((x) => norm(x.nome) === norm(nome) && Math.abs((pIn(x.esp) || 0) - esp) < 0.01 && x.mode === 'form');
   if (!b) b = state.blocks.find((x) => !x.nome.trim() && linhasVazias(x));

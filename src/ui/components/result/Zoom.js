@@ -1,7 +1,7 @@
 // Chapa ampliada: desenho grande com zoom e a lista de todos os retalhos, cada um com "Guardar como sobra".
 import { sheetSVG, PAL_SCREEN } from '../../../core/index.js';
 import { retalhosDaChapa, guardarRetalho } from '../../../domain/scraps.js';
-import { $, esc } from '../../dom.js';
+import { $ } from '../../dom.js';
 import { fotografar, registrarEntrada } from '../../../domain/history.js';
 
 export default {
@@ -16,10 +16,12 @@ export default {
       const { g, s } = a, un = state.unit; let total = 0; state.res.groups.forEach((x) => { total += x.sheets.length; });
       $('zoomTitulo').textContent = 'Chapa ' + s.n + ' de ' + total + ' · ' + g.mat;
       const dr = $('zoomDraw'), sx = dr.scrollLeft, sy = dr.scrollTop;
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       dr.innerHTML = sheetSVG(s, PAL_SCREEN, { fu, un, header: false, numbers: !!state.aj.num, todos: true, destaque: sel }, total).svg;
       dr.firstElementChild.style.width = (nivel * 100) + '%';
       dr.scrollLeft = sx; dr.scrollTop = sy;
       const rets = retalhosDaChapa(s);
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       $('zoomList').innerHTML = '<div class="label" style="margin-bottom:6px">Retalhos (' + rets.length + ')</div>' + (rets.length ? rets.map((r) =>
         '<div class="srow" data-i="' + r.i + '" aria-selected="' + (sel === r.i) + '"><span><b>R' + (r.i + 1) + '</b> ' + fu(r.w) + ' × ' + fu(r.h) + ' ' + un + (r.util ? '' : ' <span class="tag">pequeno</span>') + '</span>' +
         (r.guardado ? '<button type="button" disabled>Guardada ✓</button>' : '<button type="button" class="primary" data-guardar="' + r.i + '">Guardar como sobra</button>') + '</div>').join('')

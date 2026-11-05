@@ -1,7 +1,7 @@
 // Fase 6 no navegador: aviso de sobra que não serve e cartão de chapa evitada.
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { abrirApp } from '../../e2e/helpers.js';
+import { abrirApp } from '../helpers.js';
 
 let app, page;
 before(async () => { app = await abrirApp(); page = app.page; });

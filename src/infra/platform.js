@@ -4,7 +4,7 @@
 /** Pede a capacidade de download. Chama onReady(dl) quando disponível. */
 export function detectarDownloads(onReady) {
   try {
-    if (window.claude && window.claude.use) {
+    if (window.claude && typeof window.claude.use === 'function') {
       window.claude.use('downloads').then((d) => onReady(d || null)).catch(() => {});
     }
   } catch (e) { /* sem download direto */ }
@@ -14,7 +14,7 @@ export function detectarDownloads(onReady) {
 export async function detectarBackend() {
   const backend = { mode: 'local', db: null, uid: null };
   try {
-    if (!window.claude || !window.claude.use) return backend;
+    if (!window.claude || typeof window.claude.use !== 'function') return backend; // elemento HTML com id="claude" não conta
     const db = await window.claude.use('db'), user = await window.claude.use('user');
     if (db && user) {
       const id = await user.id();

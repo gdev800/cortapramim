@@ -33,6 +33,7 @@ export default {
       const nDes = contarDesenhos(res);
       if (nDes < nCh) t += '<div class="tile" id="tileDesenhos"><b>' + nDes + '</b><span>' + (nDes === 1 ? 'desenho de corte' : 'desenhos de corte') + ' para ' + nCh + ' chapas (chapas iguais cortam do mesmo jeito)</span></div>';
       if (c.fitaM > 0) t += '<div class="tile"><b>' + toStr(c.fitaM) + ' m</b><span>de fita de borda</span></div>';
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       $('tiles').innerHTML = t;
 
       let sh = '<div class="tbl"><table><thead><tr><th>Chapa</th><th>Esp.</th><th>Tamanho (' + un + ')</th><th>Veio</th><th>Novas</th><th>Sobras</th><th>Tenho</th><th>Comprar</th><th>Aproveit.</th></tr></thead><tbody>';
@@ -42,6 +43,7 @@ export default {
         sh += '<tr><td class="n">' + esc(g.mat) + '</td><td>' + (g.esp ? g.esp + ' mm' : '—') + '</td><td>' + fu(g.cfg.SW + 2 * (g.cfg.ref || 0)) + ' × ' + fu(g.cfg.SH + 2 * (g.cfg.ref || 0)) + '</td><td>' + (g.veio ? 'sim' : 'não') + '</td><td>' + g.nNovas + '</td><td>' + g.nSobras + '</td><td>' + (g.estoque || '—') + (g.estoqueAuto ? ' <span class="hint">do estoque</span>' : '') + '</td><td><b>' + comprar + '</b></td><td>' + pct(ap / as) + '%</td></tr>';
       });
       sh += '</tbody></table></div>';
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       $('shop').innerHTML = '<div class="label" style="margin-bottom:6px">Lista de compras</div>' + sh;
 
       const box = $('custos');
@@ -51,6 +53,7 @@ export default {
         add('Chapas novas', c.chapas); add('Fita de borda (' + toStr(c.fitaM) + ' m)', c.fita); add('Ferragens', c.ferr); add('Mão de obra', c.mao);
         rows += '<tr class="tot"><td>Custo total</td><td>' + money(c.custo) + '</td></tr>';
         if (c.venda > 0) rows += '<tr class="tot"><td>Preço de venda (margem ' + toStr(c.mg) + '%)</td><td>' + money(c.venda) + '</td></tr>';
+        // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
         box.innerHTML = '<div class="label" style="margin-bottom:6px">Custos</div><div class="tbl"><table class="cost"><tbody>' + rows + '</tbody></table></div><p class="hint" style="margin-top:6px">Sobras do estoque não entram no custo.</p>';
         box.hidden = false;
       } else box.hidden = true;
@@ -68,8 +71,10 @@ export default {
           pp.map((l) => '<tr>' + l.map((x, i) => '<td' + (i === 0 ? ' class="n"' : '') + '>' + esc(String(x)) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>' +
           '<p class="hint" style="margin-top:6px">A chapa é dividida pela área das peças de cada projeto. Ferragens e mão de obra ficam fora.</p>';
       }
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       $('relat').innerHTML = rh;
     }
-    bus.on('result', render); bus.on('unit', render);
+    // 'loaded': ao abrir um projeto salvo com plano, a tela mostra o plano dele (antes ficava o desenho do trabalho anterior)
+    bus.on('result', render); bus.on('unit', render); bus.on('loaded', render);
   },
 };

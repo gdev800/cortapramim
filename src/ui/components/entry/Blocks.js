@@ -1,10 +1,11 @@
 // Editor das chapas e das peças. Cada chapa pode ser digitada "como no caderno" ou colada de uma planilha.
 // Todos os campos têm data-k (campo da chapa) ou data-f (campo da linha); os botões têm data-act.
 import { parseLista, flagsTxt } from '../../../core/index.js';
-import { SIZES, pIn, toStr, norm } from '../../../domain/units.js';
-import { newRow, newBlock, tamKey } from '../../../domain/state.js';
+import { SIZES, toStr } from '../../../domain/units.js';
+import { newRow, tamKey } from '../../../domain/state.js';
 import { sobrasDoBloco, sobrasDescartadas } from '../../../domain/scraps.js';
 import { xlsxParaTexto } from '../../../infra/xlsx.js';
+import { tipoDeArquivoDeLista, limparTextoColado } from '../../../domain/sanitize.js';
 import { $, esc } from '../../dom.js';
 import { numeroDeAjuda } from './hints.js';
 
@@ -21,13 +22,13 @@ export default {
       const flags = (r.fc !== '0' || r.fl !== '0' || r.livre);
       const sel = (f, v) => '<select data-f="' + f + '">' + ['0', '1', '2'].map((o) => '<option value="' + o + '"' + (v === o ? ' selected' : '') + '>' + o + '</option>').join('') + '</select>';
       return '<div class="nrow" data-r="' + r.uid + '">' +
-        '<input data-f="q" inputmode="numeric" placeholder="Qtde" aria-label="Quantidade, peça ' + (i + 1) + '" value="' + esc(r.q) + '">' +
+        '<input data-f="q" maxlength="30" inputmode="numeric" placeholder="Qtde" aria-label="Quantidade, peça ' + (i + 1) + '" value="' + esc(r.q) + '">' +
         '<span class="g" aria-hidden="true">=</span>' +
-        '<input data-f="c" inputmode="decimal" placeholder="C" aria-label="Comprimento C, peça ' + (i + 1) + '" value="' + esc(r.c) + '">' +
+        '<input data-f="c" maxlength="30" inputmode="decimal" placeholder="C" aria-label="Comprimento C, peça ' + (i + 1) + '" value="' + esc(r.c) + '">' +
         '<span class="g" aria-hidden="true">×</span>' +
-        '<input data-f="l" inputmode="decimal" placeholder="L" aria-label="Largura L, peça ' + (i + 1) + '" value="' + esc(r.l) + '">' +
+        '<input data-f="l" maxlength="30" inputmode="decimal" placeholder="L" aria-label="Largura L, peça ' + (i + 1) + '" value="' + esc(r.l) + '">' +
         '<span class="g" aria-hidden="true">=</span>' +
-        '<input class="nm" data-f="n" placeholder="Nome (opcional): Fundo, Porta…" aria-label="Nome da peça ' + (i + 1) + '" value="' + esc(r.n) + '">' +
+        '<input class="nm" data-f="n" maxlength="200" placeholder="Nome (opcional): Fundo, Porta…" aria-label="Nome da peça ' + (i + 1) + '" value="' + esc(r.n) + '">' +
         '<button type="button" class="ob' + (flags ? ' on' : '') + '" data-act="opts" aria-expanded="' + (r.open ? 'true' : 'false') + '" aria-label="Fita de borda e giro, peça ' + (i + 1) + '" title="Fita de borda e giro">⋯</button>' +
         '<button type="button" class="del" data-act="del-row" aria-label="Remover peça ' + (i + 1) + '">×</button>' +
         (r.open ? '<div class="opts"><label>Fita nos lados C (0 a 2)' + sel('fc', r.fc) + '</label><label>Fita nos lados L (0 a 2)' + sel('fl', r.fl) + '</label><label class="check"><input type="checkbox" data-f="livre"' + (r.livre ? ' checked' : '') + '> Esta peça pode girar (sem veio)</label></div>' : '') +
@@ -60,22 +61,22 @@ export default {
       let h = '<section class="blk" data-b="' + b.uid + '" aria-label="Chapa ' + (i + 1) + '">' +
         '<div class="blk-h"><h3>Chapa ' + (i + 1) + (b.origem ? ' <span class="tag">projeto: ' + esc(b.origem) + '</span>' : '') + '</h3>' + (state.blocks.length > 1 ? '<button type="button" data-act="del-blk">Remover chapa</button>' : '') + '</div>' +
         '<div class="grid">' +
-        '<div class="field" style="grid-column: span 2"><label>Marca e modelo</label><input data-k="nome" list="dlMarcas" placeholder="Ex.: Branco TX Eucatex" value="' + esc(b.nome) + '"></div>' +
-        '<div class="field"><label>Espessura (mm)</label><input data-k="esp" list="dlEsp" inputmode="decimal" value="' + esc(b.esp) + '"></div>' +
+        '<div class="field" style="grid-column: span 2"><label>Marca e modelo</label><input data-k="nome" maxlength="200" list="dlMarcas" placeholder="Ex.: Branco TX Eucatex" value="' + esc(b.nome) + '"></div>' +
+        '<div class="field"><label>Espessura (mm)</label><input data-k="esp" maxlength="30" list="dlEsp" inputmode="decimal" value="' + esc(b.esp) + '"></div>' +
         '</div><div class="grid">' +
         '<div class="field"><label>Tamanho da chapa</label><select data-k="tam">' + SIZES.map((s) => '<option value="' + s[0] + '"' + (s[0] === k ? ' selected' : '') + '>' + s[1] + '</option>').join('') + '<option value="custom"' + (k === 'custom' ? ' selected' : '') + '>Outro tamanho…</option></select></div>' +
-        '<div class="field"><label>Comprimento (' + un + ')</label><input data-k="sw" inputmode="decimal" value="' + esc(b.sw) + '"></div>' +
-        '<div class="field"><label>Largura (' + un + ')</label><input data-k="sh" inputmode="decimal" value="' + esc(b.sh) + '"></div>' +
+        '<div class="field"><label>Comprimento (' + un + ')</label><input data-k="sw" maxlength="30" inputmode="decimal" value="' + esc(b.sw) + '"></div>' +
+        '<div class="field"><label>Largura (' + un + ')</label><input data-k="sh" maxlength="30" inputmode="decimal" value="' + esc(b.sh) + '"></div>' +
         '</div>' +
         '<label class="check"><input type="checkbox" data-k="veio"' + (b.veio ? ' checked' : '') + '> Chapa com veio ou textura (não gira as peças)</label>' +
         '<p class="hint" style="margin-top:-6px">' + (b.veio ? 'C de cada peça fica ao longo do comprimento da chapa, no sentido do veio. Em peças que podem girar, use o botão ⋯ da linha.' : 'Sem veio: o programa pode girar as peças 90° para aproveitar melhor.') + ' Confira o tamanho real com o fornecedor.</p>' +
         (b.veio ? '<p class="msg warn veiowarn" role="status"><b>Com veio, o aproveitamento é menor.</b> As peças não giram e sobram mais retalhos. Marque só se a chapa tem ranhura ou textura que precisa seguir o mesmo sentido. Chapa lisa: desmarque.</p>' : '') +
         '<div class="sobslot">' + sobInfo(b) + '</div>' +
         '<details class="opt"><summary>Estoque e preço (opcional)</summary><div class="grid" style="margin-top:10px">' +
-        '<div class="field"><label>Chapas novas que tenho</label><input data-k="estoque" inputmode="numeric" placeholder="Vazio = comprar tudo" value="' + esc(b.estoque) + '"></div>' +
-        '<div class="field"><label>Preço por chapa (R$)</label><input data-k="preco" inputmode="decimal" placeholder="Opcional" value="' + esc(b.preco) + '"></div>' +
-        '<div class="field"><label>Fita de borda (R$ por metro)</label><input data-k="fita" inputmode="decimal" placeholder="Opcional" value="' + esc(b.fita) + '"></div>' +
-        '<div class="field"><label>Fita usada (nome)</label><input data-k="fitaNome" placeholder="Ex.: Fita branca 22mm" value="' + esc(b.fitaNome) + '"></div></div></details>' +
+        '<div class="field"><label>Chapas novas que tenho</label><input data-k="estoque" maxlength="30" inputmode="numeric" placeholder="Vazio = comprar tudo" value="' + esc(b.estoque) + '"></div>' +
+        '<div class="field"><label>Preço por chapa (R$)</label><input data-k="preco" maxlength="30" inputmode="decimal" placeholder="Opcional" value="' + esc(b.preco) + '"></div>' +
+        '<div class="field"><label>Fita de borda (R$ por metro)</label><input data-k="fita" maxlength="30" inputmode="decimal" placeholder="Opcional" value="' + esc(b.fita) + '"></div>' +
+        '<div class="field"><label>Fita usada (nome)</label><input data-k="fitaNome" maxlength="200" placeholder="Ex.: Fita branca 22mm" value="' + esc(b.fitaNome) + '"></div></div></details>' +
         '<div class="blk-pecas"><div class="row between"><h4 style="margin:0;font-family:var(--f-display);font-size:1.15rem;font-weight:600">Peças desta chapa</h4>' +
         '<div class="seg sm" role="group" aria-label="Como informar as peças"><button type="button" data-act="mode-form" aria-pressed="' + (b.mode === 'form') + '">Digitar</button><button type="button" data-act="mode-paste" aria-pressed="' + (b.mode === 'paste') + '">Colar planilha</button></div></div>';
       if (b.mode === 'form') {
@@ -83,7 +84,7 @@ export default {
           '<div class="row"><button type="button" class="primary" data-act="add-row">+ Peça</button><button type="button" data-act="clear">Limpar</button><span class="hint cnt">' + countText(b) + '</span></div>';
       } else {
         h += '<div class="field"><label class="lbl">Colunas: Qtde, C, L, Nome (em ' + un + ')</label>' +
-          '<textarea data-k="paste" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="2\t54,3\t49\tFundo&#10;4\t12\t35\tPrateleira&#10;ou: 2 = 54,3 x 49 = Fundo">' + esc(b.paste) + '</textarea>' +
+          '<textarea data-k="paste" maxlength="200000" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="2\t54,3\t49\tFundo&#10;4\t12\t35\tPrateleira&#10;ou: 2 = 54,3 x 49 = Fundo">' + esc(b.paste) + '</textarea>' +
           '<small>' + numeroDeAjuda + '</small></div>' +
           '<div class="row"><button type="button" data-act="file">Abrir arquivo CSV ou TXT</button><button type="button" data-act="clear">Limpar</button><span class="pastehint cnt">' + countText(b) + '</span></div>';
       }
@@ -91,10 +92,13 @@ export default {
     }
 
     function render() {
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       $('blocks').innerHTML = state.blocks.map(blockHTML).join('');
       bus.emit('edited');
     }
+    // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
     const renderRowsOf = (b) => { const el = blkEl(b.uid); if (!el) return; el.querySelector('.rows').innerHTML = rowsHTML(b); el.querySelector('.cnt').textContent = countText(b); };
+    // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
     const refreshSob = (b) => { const el = blkEl(b.uid); if (el) el.querySelector('.sobslot').innerHTML = sobInfo(b); };
     function addRow(b, focus) {
       const r = newRow(state); b.rows.push(r); renderRowsOf(b);
@@ -163,13 +167,15 @@ export default {
       bus.emit('edited');
     });
 
-    // Arquivo aberto: CSV/TXT entram como texto; Excel é convertido para texto de colunas.
+    // Arquivo aberto: CSV/TXT entram como texto; Excel (.xlsx) é convertido para texto de colunas.
     $('fileIn').addEventListener('change', function () {
       const f = this.files && this.files[0]; const b = state.blocks.find((x) => x.uid === state.fileFor);
       if (!f || !b) return;
-      const rd = new FileReader(); const isX = /\.xlsx?$/i.test(f.name);
-      rd.onload = () => {
-        try { b.paste = isX ? xlsxParaTexto(rd.result) : String(rd.result || ''); } catch (e) { ctx.msg(e && e.message ? e.message : 'Não consegui ler a planilha.', 'err'); return; }
+      const tipo = tipoDeArquivoDeLista(f);
+      if (tipo.erro) { ctx.msg(tipo.erro, 'err'); return; }
+      const rd = new FileReader(), isX = tipo.tipo === 'xlsx';
+      rd.onload = async () => {
+        try { b.paste = isX ? await xlsxParaTexto(rd.result) : limparTextoColado(String(rd.result || '')); } catch (e) { ctx.msg(e && e.message ? e.message : 'Não consegui ler a planilha.', 'err'); return; }
         if (isX && !b.paste) { ctx.msg('Não achei peças na planilha. Use colunas Qtde, C, L e Nome.', 'warn'); return; }
         b.mode = 'paste'; render(); ctx.save(); if (isX) ctx.msg('Planilha lida. Confira a lista abaixo.', 'ok');
       };

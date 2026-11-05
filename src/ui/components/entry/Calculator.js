@@ -50,6 +50,7 @@ export default {
         ctx.msg('A peça ' + fu(b.p.c) + ' × ' + fu(b.p.l) + (b.p.nome ? ' (' + b.p.nome + ')' : '') + ' não cabe na chapa ' + b.g.nome + ' (' + fu(b.g.SW + 2 * ref) + ' × ' + fu(b.g.SH + 2 * ref) + ' ' + state.unit + (ref ? ', com refilo' : '') + ').' + (gira.length ? ' Com o veio, C precisa ir ao longo do comprimento da chapa. Girada ela cabe.' : (b.g.rot ? '' : ' Confira as medidas.')) + (bad.length > 1 ? ' Mais ' + (bad.length - 1) + ' peça(s) também não cabem.' : ''), 'err');
         if (gira.length) {
           const ma = $('msgAct');
+          // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
           ma.innerHTML = '<button type="button" class="brass" id="btnLivre">Deixar ' + (gira.length === 1 ? 'essa peça girar' : 'essas ' + gira.length + ' peças girarem') + ' e calcular</button>'; ma.hidden = false;
           $('btnLivre').onclick = () => { marcarLivre(state, gira); bus.emit('blocks'); ctx.save(); calcular(); };
         }

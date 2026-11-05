@@ -1,5 +1,4 @@
 // Listas em CSV (medidas na unidade escolhida).
-import { V } from './constants.js';
 
 // ---------- CSV (medidas na unidade escolhida) ----------
 export function csvCortes(res, fu, un) {

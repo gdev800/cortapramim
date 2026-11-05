@@ -1,6 +1,7 @@
 // Guardar e carregar dados do usuário: na conta (quando existe) ou neste navegador.
 // A tela não sabe onde os dados ficam. Para trocar por outro banco no futuro, só este arquivo muda.
 import { KEYS, lget, lset } from './local.js';
+import { sanitizarSobras, sanitizarInsumos, sanitizarHistorico, sanitizarProjetos } from '../domain/sanitize.js';
 
 /**
  * @param {object} p
@@ -15,7 +16,8 @@ export function createPersistence({ state, backend, notify }) {
   const queues = {};
 
   // Estoque e insumos têm o mesmo jeito: uma lista num documento só.
-  function listaDoc(nome, chave, campo, msgErro) {
+  // `limpar` é a fronteira (sanitize.js): o que vem do navegador ou da conta pode ter sido alterado por fora do app.
+  function listaDoc(nome, chave, campo, msgErro, limpar) {
     queues[nome] = Promise.resolve();
     return {
       save() {
@@ -26,11 +28,11 @@ export function createPersistence({ state, backend, notify }) {
         return queues[nome];
       },
       async load() {
-        const local = lget(chave) || [];
+        const local = limpar(lget(chave));
         if (cloud()) {
           try {
             const s = await doc(nome).get();
-            if (s.exists && Array.isArray(s.data().items)) { state[campo] = s.data().items; lset(chave, state[campo]); return; }
+            if (s.exists && Array.isArray(s.data().items)) { state[campo] = limpar(s.data().items); lset(chave, state[campo]); return; }
             state[campo] = local; if (local.length) await this.save(); return;
           } catch (e) { /* cai para o local */ }
         }
@@ -38,9 +40,9 @@ export function createPersistence({ state, backend, notify }) {
       },
     };
   }
-  const est = listaDoc('estoque', KEYS.estoque, 'estoque', 'Não consegui salvar na sua conta agora. As sobras ficaram neste navegador.');
-  const ins = listaDoc('insumos', KEYS.insumos, 'insumos', '');
-  const his = listaDoc('historico', KEYS.historico, 'historico', '');
+  const est = listaDoc('estoque', KEYS.estoque, 'estoque', 'Não consegui salvar na sua conta agora. As sobras ficaram neste navegador.', sanitizarSobras);
+  const ins = listaDoc('insumos', KEYS.insumos, 'insumos', '', sanitizarInsumos);
+  const his = listaDoc('historico', KEYS.historico, 'historico', '', sanitizarHistorico);
 
   return {
     saveEstoque: () => est.save(), loadEstoque: () => est.load(),
@@ -48,9 +50,9 @@ export function createPersistence({ state, backend, notify }) {
     saveHistorico: () => his.save(), loadHistorico: () => his.load(),
 
     async loadProjetos() {
-      const local = lget(KEYS.projetos) || [];
+      const local = sanitizarProjetos(lget(KEYS.projetos));
       if (cloud()) {
-        try { const q = await projCol().get(); state.projetos = q.docs.map((d) => ({ id: d.id, ...d.data() })); return; } catch (e) { /* local */ }
+        try { const q = await projCol().get(); state.projetos = sanitizarProjetos(q.docs.map((d) => ({ ...d.data(), id: d.id }))); return; } catch (e) { /* local */ }
       }
       state.projetos = local;
     },

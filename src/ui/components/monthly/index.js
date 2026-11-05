@@ -26,11 +26,14 @@ export default {
     function render() {
       const { r, serie } = dados();
       $('relVazio').hidden = r.projetos > 0;
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       $('relCards').innerHTML = cartoesDoMes(r).map((c) => '<div class="rel-card" data-k="' + c.k + '"><span class="label">' + esc(c.rotulo) + '</span><b>' + esc(c.valor) + '</b><span class="hint">' + esc(c.sub) + '</span></div>').join('');
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       $('relTabela').innerHTML = r.porMaterial.length
         ? '<table><thead><tr><th>Material</th><th>Espessura</th><th>Chapas novas</th><th>Projetos</th></tr></thead><tbody>' +
           r.porMaterial.map((m) => '<tr><td class="n">' + esc(m.nome) + '</td><td>' + (m.esp ? esc(toStr(m.esp)) + ' mm' : '–') + '</td><td>' + esc(toStr(m.chapas)) + '</td><td>' + m.projetos + '</td></tr>').join('') + '</tbody></table>'
         : '';
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       $('relGrafico').innerHTML = graficoBarras(serie, $('relMetrica').value, sel);
     }
 

@@ -1,2 +1,18 @@
 node_modules/
 dist/
+
+# sistema
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# segredos: nunca versionar (a chave publicável fica em src/infra/supabase/config.js, de propósito)
+.env
+.env.*
+*.pem
+*.key
+supabase/.temp/
+supabase/.branches/
+
+# arquivos de trabalho que não são do código
+*.pdf

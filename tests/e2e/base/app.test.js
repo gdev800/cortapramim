@@ -1,12 +1,11 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { abrirApp } from './helpers.js';
+import { abrirApp } from '../helpers.js';
 
 let app, page;
 before(async () => { app = await abrirApp(); page = app.page; });
 after(async () => { await app.fechar(); });
 
-const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
 
 test('abre com o exemplo já calculado e sem erros', async () => {
   const r = await page.evaluate(() => ({ res: !!window.__pc.state.res, tiles: document.getElementById('tiles').children.length, hidden: document.getElementById('resultado').hidden }));

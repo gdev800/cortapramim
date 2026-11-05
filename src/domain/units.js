@@ -7,10 +7,16 @@ export const SIZES = [['2750x1850', '2750 × 1850 mm'], ['2750x1840', '2750 × 1
 /** Quantos milímetros vale 1 unidade da tela. */
 export const fac = (unit) => (unit === 'cm' ? 10 : 1);
 
+/** Número decimal simples: "54", "54,3", "54.3", "-5", ".5". Sem notação científica, hexadecimal ou Infinity. */
+const DECIMAL = /^[+-]?(\d+(\.\d*)?|\.\d+)$/;
+
 /** Lê um número digitado ("54,3" ou "54.3"). Vazio ou inválido vira NaN. */
 export const pIn = (s) => {
+  if (typeof s === 'number') return Number.isFinite(s) ? s : NaN;
   const t = String(s == null ? '' : s).trim().replace(',', '.');
-  return t === '' ? NaN : Number(t);
+  if (!DECIMAL.test(t)) return NaN;
+  const n = Number(t);
+  return Number.isFinite(n) ? n : NaN;
 };
 
 /** Número para mostrar: 2 casas no máximo, vírgula decimal. */
@@ -19,7 +25,8 @@ export const toStr = (v) => String(Math.round(v * 100) / 100).replace('.', ',');
 /** Texto para comparar nomes sem se importar com maiúsculas e espaços nas pontas. */
 export const norm = (s) => String(s || '').trim().toLowerCase();
 
-export const money = (n) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+/** Valor em reais. Sempre converte para número: um texto nunca passa direto para a tela. */
+export const money = (n) => { const v = Number(n); return (Number.isFinite(v) ? v : 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); };
 
 /** Nome de arquivo seguro. */
 export const slug = (s) =>

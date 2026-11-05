@@ -17,9 +17,11 @@ export default {
     function render() {
       const a = abaixoDoMinimo(state);
       $('minAviso').hidden = !a.length;
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       $('minAviso').innerHTML = a.map((x) => '<p class="msg warn">' + esc(x.texto) + '</p>').join('');
       const l = lista();
       if (!l.itens.length) { $('cmpLista').innerHTML = '<p class="hint">Nada para comprar agora.</p>'; return; }
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       $('cmpLista').innerHTML = '<table><thead><tr><th>Item</th><th>Tenho</th><th>Plano pede</th><th>Mínimo</th><th>Comprar</th><th>Motivo</th></tr></thead><tbody>' +
         l.itens.map((x) => '<tr data-tipo="' + x.tipo + '"><td class="n">' + esc(x.nome) + (x.c ? ' <span class="hint">' + ctx.fu(x.c) + '×' + ctx.fu(x.l) + ' ' + state.unit + '</span>' : '') + '</td><td>' + toStr(x.tenho) + '</td><td>' + (x.precisa ? toStr(x.precisa) : '–') + '</td><td>' + (x.min ? toStr(x.min) : '–') + '</td><td><b>' + toStr(x.comprar) + ' ' + esc(x.un === 'chapa' ? (x.comprar === 1 ? 'chapa' : 'chapas') : x.un) + '</b></td><td class="n hint">' + esc(x.motivo) + '</td></tr>').join('') + '</tbody></table>';
     }

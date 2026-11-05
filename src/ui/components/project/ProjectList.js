@@ -27,6 +27,7 @@ export default {
         STATUS.map((s) => '<option value="' + s[0] + '"' + ((p.status || 'orcado') === s[0] ? ' selected' : '') + '>' + s[1] + '</option>').join('') +
         '</select><button type="button" data-open="' + esc(p.id) + '">Abrir</button><button type="button" data-join="' + esc(p.id) + '" title="Traz as chapas deste projeto para o trabalho aberto e corta tudo junto">Juntar</button><button type="button" data-pdel="' + esc(p.id) + '">Excluir</button></span></div>').join('')
         : '<p class="hint">' + (lista.length ? 'Nenhum projeto com esse status.' : 'Nenhum projeto salvo ainda.') + '</p>';
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       $('projList').innerHTML = h;
     }
 

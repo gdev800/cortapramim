@@ -1,7 +1,7 @@
 // Chapas repetidas na tela: o cartão mostra quantos desenhos e as chapas iguais ganham a etiqueta.
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { abrirApp } from '../../e2e/helpers.js';
+import { abrirApp } from '../helpers.js';
 
 let app, page;
 before(async () => { app = await abrirApp(); page = app.page; });

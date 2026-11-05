@@ -1,7 +1,7 @@
 // Fase 20: login na tela, com um Supabase falso dentro do navegador (sem rede, sem credenciais reais).
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { abrirApp } from '../../e2e/helpers.js';
+import { abrirApp } from '../helpers.js';
 
 // Servidor de login falso: guarda usuários na memória e avisa as mudanças como o Supabase.
 function instalarFalso() {

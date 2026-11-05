@@ -1,5 +1,6 @@
 // Salvar e restaurar o trabalho inteiro. Rascunho, projeto salvo e backup usam o mesmo formato.
 import { DEFAULT_AJ, DEFAULT_ORC, DEFAULT_PROP, newBlock } from './state.js';
+import { sanitizarSnapshot } from './sanitize.js';
 
 /** Foto do trabalho atual, pronta para virar JSON. */
 export function snapshot(state, comPlano) {
@@ -11,8 +12,10 @@ export function snapshot(state, comPlano) {
   return JSON.parse(JSON.stringify(o));
 }
 
-/** Coloca uma foto no estado. Não mexe na tela: quem chama avisa a interface. */
+/** Coloca uma foto no estado. Não mexe na tela: quem chama avisa a interface.
+ *  A foto pode vir de fora (rascunho, projeto salvo, backup): passa antes pela fronteira (sanitize.js). */
 export function restore(state, d) {
+  d = sanitizarSnapshot(d);
   state.unit = d.unit === 'mm' ? 'mm' : 'cm';
   state.aj = { ...DEFAULT_AJ, ...(d.aj || {}) };
   state.blocks = (d.blocks || []).map((b) => newBlock(state, b));

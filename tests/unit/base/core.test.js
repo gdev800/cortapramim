@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseLista, extraiFlags, flagsTxt, naoCabem, planejar, fitaMetros, csvCortes, csvPecas, sheetSVG, PAL_SCREEN, labelsSVG } from '../../src/core/index.js';
+import { parseLista, extraiFlags, flagsTxt, naoCabem, planejar, fitaMetros, csvCortes, csvPecas, sheetSVG, PAL_SCREEN, labelsSVG } from '../../../src/core/index.js';
 
 test('parseLista: estilo caderno com nome e fita', () => {
   const p = parseLista('2 = 54,3 x 49,5 = Fundo ; fita 2C 1L ; livre\nlixo qualquer');

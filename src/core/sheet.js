@@ -1,5 +1,5 @@
 // Otimização de uma chapa: árvore de cortes -> posições, cortes e retalhos.
-import { EPS, H, V } from './constants.js';
+import { EPS, V } from './constants.js';
 import { anneal, costOf, makeCtx } from './anneal.js';
 import { fasesDoPlano } from './phases.js';
 

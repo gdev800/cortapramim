@@ -1,5 +1,5 @@
 // Desenho de uma chapa em SVG.
-import { V, RETALHO_MIN_LISTA } from './constants.js';
+import { RETALHO_MIN_LISTA } from './constants.js';
 import { esc, f1 } from './text.js';
 
 export const PAL_EXPORT = { paper: '#ffffff', sheet: '#e8dcc4', sheetLine: '#2a2118', piece: '#f1ddb8', pieceLine: '#8a5827', text: '#2a2118', cut: '#c9372c', halo: '#ffffff', dim: '#6b5a46' };

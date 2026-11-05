@@ -1,6 +1,8 @@
 // Backup em arquivo (.json): monta o pacote e valida um pacote recebido. Sem DOM e sem gravação.
 import { snapshot } from './snapshot.js';
 import { insumoValido } from './supplies.js';
+import { sanitizarProjetos, sanitizarProjeto, sanitizarSobras, sanitizarInsumos, sanitizarHistorico } from './sanitize.js';
+import { MAX_BYTES_BACKUP } from './limites.js';
 
 // Não mudar: identifica os backups (inclusive os feitos antes do nome Corta pra Mim).
 export const APP_ID = 'plano-corte-mdf';
@@ -14,12 +16,24 @@ export function montarPacote(state) {
 
 export const nomeArquivoBackup = () => 'backup-plano-de-corte-' + new Date().toISOString().slice(0, 10) + '.json';
 
-/** @returns {{erro:string}|{d:object}} */
+/**
+ * Lê e confere um backup. Tudo que vem do arquivo passa pela fronteira (sanitize.js) antes de ir para o estado:
+ * um backup pode ter sido editado à mão ou vindo de outra pessoa.
+ * @returns {{erro:string}|{d:object}}
+ */
 export function lerPacote(texto) {
+  if (typeof texto !== 'string' || texto.length > MAX_BYTES_BACKUP) return { erro: 'Arquivo grande demais para um backup (máximo 20 MB).' };
   let d;
   try { d = JSON.parse(texto); } catch (e) { return { erro: 'Esse arquivo não é um backup válido.' }; }
-  if (!d || d.app !== APP_ID || !Array.isArray(d.projetos)) return { erro: 'Esse arquivo não é um backup do Corta pra Mim.' };
-  return { d };
+  if (!d || typeof d !== 'object' || d.app !== APP_ID || !Array.isArray(d.projetos)) return { erro: 'Esse arquivo não é um backup do Corta pra Mim.' };
+  const limpo = {
+    app: APP_ID, versao: Number(d.versao) || 1,
+    projetos: sanitizarProjetos(d.projetos), estoque: sanitizarSobras(d.estoque),
+    insumos: sanitizarInsumos(d.insumos), historico: sanitizarHistorico(d.historico).map((m) => { delete m.desfazer; return m; }),
+  };
+  const atual = sanitizarProjeto(d.atual);
+  if (atual) limpo.atual = atual;
+  return { d: limpo };
 }
 
 /** Projetos do pacote que valem a pena gravar: bem formados e mais novos que os atuais. */

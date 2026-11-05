@@ -1,7 +1,7 @@
 // Fase 10: chapa nova começa sem veio; com veio aparece o alerta de aproveitamento menor.
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { abrirApp } from '../../e2e/helpers.js';
+import { abrirApp } from '../helpers.js';
 
 let app, page;
 before(async () => { app = await abrirApp(); page = app.page; });

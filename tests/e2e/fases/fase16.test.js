@@ -2,7 +2,7 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { abrirApp } from '../../e2e/helpers.js';
+import { abrirApp } from '../helpers.js';
 
 let app, page, g;
 before(async () => {
@@ -59,7 +59,7 @@ test('CSV e PDF da lista de compras baixam', async () => {
   const csv = await baixa('#btnCmpCsv');
   assert.equal(csv.suggestedFilename(), 'lista-de-compras.csv');
   const txt = await readFile(await csv.path(), 'utf8');
-  assert.match(txt, /^﻿Tipo;Item;/); assert.match(txt, /Mínimo/);
+  assert.match(txt, /^\uFEFFTipo;Item;/); assert.match(txt, /Mínimo/);
   const pdf = await baixa('#btnCmpPdf');
   assert.equal(pdf.suggestedFilename(), 'lista-de-compras.pdf');
   assert.equal((await readFile(await pdf.path())).subarray(0, 4).toString(), '%PDF');

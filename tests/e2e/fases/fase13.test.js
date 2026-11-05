@@ -1,7 +1,7 @@
 // Fase 13: cadastrar chapa inteira pela tela, ver "Tenho" na lista de compras e baixar ao atualizar o estoque.
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { abrirApp } from '../../e2e/helpers.js';
+import { abrirApp } from '../helpers.js';
 
 let app, page;
 before(async () => { app = await abrirApp(); page = app.page; });

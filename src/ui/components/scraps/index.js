@@ -15,8 +15,9 @@ export default {
     function render() {
       const el = $('sobraList');
       if (!state.estoque.length) { el.innerHTML = '<p class="hint">Nenhuma sobra guardada ainda. Depois de aprovar um plano, os retalhos grandes podem ir direto para cá.</p>'; return; }
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       el.innerHTML = state.estoque.map((s) =>
-        '<div class="srow"><span>' + esc(s.nome || 'Sem nome') + ' · ' + (s.esp ? s.esp + ' mm' : '—') + (s.veio ? ' · com veio' : '') + (s.obs ? ' · ' + esc(s.obs) : '') + '</span><span><b>' + fu(s.c) + ' × ' + fu(s.l) + ' ' + state.unit + '</b> <button type="button" data-sdel="' + esc(s.id) + '" aria-label="Remover sobra">Remover</button></span></div>').join('');
+        '<div class="srow"><span>' + esc(s.nome || 'Sem nome') + ' · ' + (s.esp ? esc(s.esp) + ' mm' : '—') + (s.veio ? ' · com veio' : '') + (s.obs ? ' · ' + esc(s.obs) : '') + '</span><span><b>' + fu(s.c) + ' × ' + fu(s.l) + ' ' + state.unit + '</b> <button type="button" data-sdel="' + esc(s.id) + '" aria-label="Remover sobra">Remover</button></span></div>').join('');
     }
     const rotulos = () => { $('sbCl').textContent = 'Comprimento (' + state.unit + ')'; $('sbLl').textContent = 'Largura (' + state.unit + ')'; };
 

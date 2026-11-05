@@ -15,6 +15,7 @@ export default {
       $('btnMovDesfazer').disabled = !(ult && ult.desfazer);
       $('btnMovDesfazer').textContent = 'Desfazer o último'; confirmar = false;
       if (!h.length) { $('movList').innerHTML = '<p class="hint">Nenhuma movimentação ainda. Elas aparecem quando você cadastra algo no estoque ou atualiza o estoque com um plano aprovado.</p>'; return; }
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       $('movList').innerHTML = h.slice(-MOSTRAR).reverse().map((m) => {
         const t = textoMovimento(m);
         return '<div class="srow mov mov-' + esc(m.tipo) + '"><span><b style="font-family:var(--f-body);font-weight:600">' + esc(t.titulo) + '</b><br><span class="hint">' + esc(t.detalhe) + '</span></span><span class="hint">' + esc(t.data) + '</span></div>';

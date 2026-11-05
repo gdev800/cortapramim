@@ -1,7 +1,7 @@
 // Fase 1 no navegador: campo de fita nos Ajustes, relatório na tela e coluna "Final".
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { abrirApp } from '../../e2e/helpers.js';
+import { abrirApp } from '../helpers.js';
 
 let app, page;
 before(async () => { app = await abrirApp(); page = app.page; });

@@ -3,6 +3,7 @@ import { parseLista } from '../core/index.js';
 import { fac, pIn } from './units.js';
 import { sobrasDoBloco } from './scraps.js';
 import { chapaDoEstoque } from './supplies.js';
+import { MEDIDA_MIN_MM, MEDIDA_MAX_MM, ESPESSURA_MAX_MM, PRECO_MAX } from './limites.js';
 
 export const MAX_POR_LINHA = 999;
 export const MAX_TOTAL = 1500;
@@ -28,7 +29,7 @@ export function coletar(state) {
       b.rows.forEach((r, i) => {
         const q = r.q.trim(), c = pIn(r.c), l = pIn(r.l);
         if (!q && !r.c.trim() && !r.l.trim()) return;
-        const qty = q === '' ? 1 : parseInt(q, 10);
+        const qty = q === '' ? 1 : (/^\d+$/.test(q) ? parseInt(q, 10) : NaN); // "2a" não vira 2
         if (!(qty > 0) || !(c > 0) || !(l > 0)) { erros.push(nome + ', linha ' + (i + 1) + ': preencha quantidade, C e L com números.'); return; }
         rows.push({ qty, c: c * F, l: l * F, nome: r.n.trim(), fc: parseInt(r.fc, 10) || 0, fl: parseInt(r.fl, 10) || 0, livre: !!r.livre });
       });
@@ -40,8 +41,18 @@ export function coletar(state) {
       erros.push(nome + ': quantidade grande demais (máximo ' + MAX_POR_LINHA + ' por linha e ' + MAX_TOTAL + ' peças no total). Confira os números.');
       return;
     }
+    // peça maior que a chapa já tem a mensagem "não cabe na chapa" (core/validate.js); aqui só o mínimo
+    const fora = rows.find((r) => r.c < MEDIDA_MIN_MM || r.l < MEDIDA_MIN_MM);
+    if (fora) {
+      erros.push(nome + ': a peça ' + (fora.nome ? '"' + fora.nome + '" ' : '') + 'tem medida menor que ' + MEDIDA_MIN_MM + ' mm. Confira a unidade (' + state.unit + ').');
+      return;
+    }
     const sw = pIn(b.sw) * F, sh = pIn(b.sh) * F;
     if (!(sw > 0) || !(sh > 0)) { erros.push(nome + ': informe o tamanho da chapa.'); return; }
+    if (sw > MEDIDA_MAX_MM || sh > MEDIDA_MAX_MM) { erros.push(nome + ': o tamanho da chapa passa de ' + MEDIDA_MAX_MM / 1000 + ' m. Confira a unidade (' + state.unit + ').'); return; }
+    const espTxt = String(b.esp == null ? '' : b.esp).trim(), espN = pIn(espTxt);
+    if (espTxt && !(espN > 0 && espN <= ESPESSURA_MAX_MM)) { erros.push(nome + ': espessura inválida (de 0 a ' + ESPESSURA_MAX_MM + ' mm).'); return; }
+    avisos.push(...avisosDeValores(nome, b));
 
     // Espessura da fita (mm): se ligada, as medidas digitadas são finais e o corte desconta a fita de cada lado.
     const fe = Math.min(5, Math.max(0, pIn(state.aj && state.aj.fitaEsp) || 0));
@@ -70,6 +81,16 @@ export function coletar(state) {
     });
   });
   return { groups: estoqueDeChapas(state, juntarIguais(groups, metas)), erros, avisos };
+}
+
+/** Preço, fita e estoque digitados errado não impedem o cálculo (valem 0), mas o usuário precisa saber. */
+function avisosDeValores(nome, b) {
+  const out = [], vazio = (v) => String(v == null ? '' : v).trim() === '';
+  const preco = (v) => { const n = pIn(v); return n >= 0 && n <= PRECO_MAX; };
+  if (!vazio(b.preco) && !preco(b.preco)) out.push(nome + ': preço da chapa inválido, considerado R$ 0.');
+  if (!vazio(b.fita) && !preco(b.fita)) out.push(nome + ': preço da fita inválido, considerado R$ 0.');
+  if (!vazio(b.estoque) && !/^\d+$/.test(String(b.estoque).trim())) out.push(nome + ': "Chapas novas que tenho" precisa ser um número inteiro; considerado 0.');
+  return out;
 }
 
 /**

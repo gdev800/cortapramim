@@ -36,6 +36,7 @@ export default {
         '<div class="exp-row"><span>' + (state.estAtual ? 'Estoque de sobras atualizado.' : 'Estoque de sobras: ' + pe.usados.length + ' usada(s) saem, ' + pe.novos.length + ' retalho(s) novo(s) entram.') + '</span>' +
         (state.estAtual ? '' : '<button type="button" class="primary" id="btnEstoque">Atualizar estoque</button>') + '</div></div>' +
         (state.dl || !emQuadro() ? '' : '<p class="hint">Se o download for bloqueado nesta visualização, os botões mostram a imagem, o texto ou um link para abrir o arquivo.</p>');
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       box.innerHTML = h;
     }
 

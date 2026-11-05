@@ -16,6 +16,7 @@ export default {
       if (!state.insumos.length) { el.innerHTML = '<p class="hint">Nada cadastrado ainda. Cadastre o rolo de fita e as ferragens que você tem. O plano mostra o que falta comprar.</p>'; return; }
       const desc = (s) => s.tipo === 'chapa' ? esc(s.nome) + ' · ' + esc(String(s.esp).replace('.', ',')) + ' mm · ' + ctx.fu(s.c) + ' × ' + ctx.fu(s.l) + ' ' + state.unit : esc(s.nome);
       const TAG = { fita: 'fita', ferr: 'ferragem', chapa: 'chapa' };
+      // eslint-disable-next-line no-unsanitized/property -- revisado: textos com esc(), números vêm do motor ou de sanitize.js
       el.innerHTML = state.insumos.map((s) =>
         '<div class="srow' + (minimoDe(s) > 0 && s.q < minimoDe(s) ? ' abaixo-min' : '') + '"><span>' + desc(s) + ' <span class="tag">' + (TAG[s.tipo] || s.tipo) + '</span></span><span class="row" style="flex-wrap:nowrap;gap:8px"><input class="qin" data-iq="' + esc(s.id) + '" inputmode="decimal" value="' + esc(toStr(s.q)) + '" aria-label="Quantidade em estoque de ' + esc(s.nome) + '"><span class="hint">' + (s.tipo === 'fita' ? 'm' : 'un') + '</span><span class="hint">mín.</span><input class="qin" data-imin="' + esc(s.id) + '" inputmode="decimal" placeholder="–" value="' + (minimoDe(s) ? esc(toStr(minimoDe(s))) : '') + '" aria-label="Estoque mínimo de ' + esc(s.nome) + '"><button type="button" data-idel="' + esc(s.id) + '" aria-label="Remover">Remover</button></span></div>').join('');
     }
