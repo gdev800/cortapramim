@@ -52,7 +52,7 @@ export async function gerarPdfPlano(state) {
   if (pp.length) {
     if (y > 235) { doc.addPage(); y = 20; }
     doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(29, 25, 20); doc.text('Por projeto', PM, y + 4); y += 7;
-    y = pdfTabela(doc, y, CAB_RELAT_PROJ.map(semSup), pp.map((r) => r.map(semSup))) + 8;
+    pdfTabela(doc, y, CAB_RELAT_PROJ.map(semSup), pp.map((r) => r.map(semSup)));
   }
 
   const des = gruposDeDesenho(res);

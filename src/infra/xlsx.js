@@ -14,6 +14,6 @@ export async function xlsxParaTexto(buf) {
   const tam = buf && (buf.byteLength != null ? buf.byteLength : buf.size);
   if (tam > MAX_BYTES_PLANILHA) throw new Error('Planilha grande demais (máximo 5 MB).');
   let rows;
-  try { rows = await readSheet(buf); } catch (e) { throw new Error('Não consegui ler a planilha. Salve como .xlsx (Excel) ou CSV e tente de novo.'); }
+  try { rows = await readSheet(buf); } catch (e) { throw new Error('Não consegui ler a planilha. Salve como .xlsx (Excel) ou CSV e tente de novo.', { cause: e }); }
   return linhasParaTexto(rows);
 }

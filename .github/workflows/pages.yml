@@ -32,14 +32,20 @@ jobs:
         run: npm run lint
       - name: Auditoria de dependências (falha em alta ou crítica)
         run: npm run audit
+      # os relatórios .tap viram anotações na página da execução quando algo falha (o log exige login)
       - name: Testes unitários
-        run: npm test
+        run: node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=tap --test-reporter-destination=unit.tap "tests/unit/**/*.test.js"
       - name: Compilar (site e artefato)
         run: npm run build && npm run build:artefato
       - name: Navegador para os testes
         run: npx playwright install --with-deps chromium
       - name: Testes no navegador (e2e)
-        run: npm run test:e2e
+        run: node --test --test-timeout=600000 --test-reporter=spec --test-reporter-destination=stdout --test-reporter=tap --test-reporter-destination=e2e.tap "tests/e2e/**/*.test.js"
+      - name: Mostrar falhas como anotação
+        if: failure()
+        run: |
+          node scripts/anotar-falhas.mjs unit.tap "Unitário"
+          node scripts/anotar-falhas.mjs e2e.tap "Navegador"
       - uses: actions/upload-artifact@v5
         with:
           name: site-${{ github.run_attempt }}

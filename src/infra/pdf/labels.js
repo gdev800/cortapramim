@@ -56,7 +56,7 @@ export async function gerarPdfEtiquetas(state, tam, medidas, mapa) {
     }
     doc.setFont('helvetica', 'normal'); doc.setTextColor(90, 80, 70);
     const t3 = 'Chapa ' + sh.n + ' · ' + latin1(String(it.g.mat)); fit(t3, tw, 7.5, 5.5); doc.text(t3, x + pad, yy); yy += 3.6;
-    if (medidas && (q.fc || q.fl)) { const t4 = 'Fita: C x' + (q.fc || 0) + '   L x' + (q.fl || 0); doc.setTextColor(29, 25, 20); doc.setFont('helvetica', 'bold'); fit(t4, tw, 8.5, 6); doc.text(t4, x + pad, yy); yy += 4; }
+    if (medidas && (q.fc || q.fl)) { const t4 = 'Fita: C x' + (q.fc || 0) + '   L x' + (q.fl || 0); doc.setTextColor(29, 25, 20); doc.setFont('helvetica', 'bold'); fit(t4, tw, 8.5, 6); doc.text(t4, x + pad, yy); }
     if (state.proj.nome) { doc.setFont('helvetica', 'normal'); doc.setTextColor(140, 130, 118); const t5 = latin1(state.proj.nome); fit(t5, tw, 6.5, 5); doc.text(t5, x + pad, y + ch - pad + 0.5); }
   });
   if (!items.length) { doc.setFontSize(12); doc.text('Nenhuma peça no plano.', 14, 20); }

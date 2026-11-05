@@ -16,3 +16,6 @@ supabase/.branches/
 
 # arquivos de trabalho que não são do código
 *.pdf
+
+# relatórios dos testes no CI
+*.tap

@@ -54,4 +54,9 @@ details.estoque[open] > summary::after { content: "Fechar"; }
 .pill i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); display: block; }
 .pill.on i { background: var(--ok); }
 @media (max-width: 640px) { .brand span, .pill { display: none; } .nav-links { gap: 18px; } }
+/* sem isso o menu não encolhe abaixo do texto: com uma fonte mais larga (Google Fonts sem carregar) a página ganhava rolagem lateral */
+.nav-in > .brand { flex: none; }
+.nav-links { min-width: 0; }
+@media (max-width: 420px) { .nav-links { gap: 12px; } .nav-in { gap: 10px; } }
+@media (max-width: 380px) { .nav-in { padding: 0 12px; } .nav-links { gap: 10px; font-size: 0.84rem; } .nav-links .nav-conta { padding: 0 12px; } }
 
