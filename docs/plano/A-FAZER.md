@@ -10,11 +10,167 @@ texto novo na tela passa por `esc()` (o lint cobra).
 **Para retomar numa sessão nova:** "Leia docs/plano/A-FAZER.md e faça a Parte N".
 
 ## Ordem sugerida
-1. **Pendências manuais** (abaixo): 30 minutos no painel do Supabase e no GitHub; destravam o resto.
-2. **Parte 10b, itens S1 a S4**: fecham o que a Parte 10a deixou aberto no código.
-3. **Parte 9 → 9b**: dados na nuvem e plano por link (o pedido do Gilmar). Os itens S5 a S7 andam junto.
-4. **Parte 12** (hospedagem com cabeçalhos HTTP) e **Parte 11** (LGPD) **antes de abrir para qualquer pessoa de fora**.
+1. **Bloco R — Antes de usar numa marcenaria real** (logo abaixo). Tem duas etapas:
+   **R-1, piloto na nossa oficina** (Gabriel e Gilmar cortando projetos reais) e
+   **R-2, outras marcenarias usando** (o "beta"). Nada de marcenaria de fora antes de R-1 e R-2 prontos.
+2. **Pendências manuais** (abaixo): 30 minutos no painel do Supabase e no GitHub; fazem parte do R-2.
+3. **Navegação em páginas** (está no R-2, item R26): antes de mostrar o sistema a terceiros.
+4. **Parte 9b**, **Parte 12** completa, **Parte 11** completa e o restante da **Parte 10b** (S1, S3, S7 a S11).
 5. Partes 5 e 6 quando houver arquivo real do Promob/SketchUp e o ERP escolhido.
+
+---
+
+## Bloco R — Antes de usar numa marcenaria real  [ ]
+Regra que guia o bloco: **erro de corte não tem volta.** Uma chapa cortada errada é dinheiro perdido e móvel atrasado;
+um projeto perdido é a marcenaria desistindo do sistema. Por isso a ordem é: primeiro o corte certo, depois os dados
+que não se perdem, depois o resto.
+
+Duas etapas, com critério de pronto cada uma:
+- **R-1 Piloto na nossa oficina:** itens R1 a R14. Gabriel e Gilmar usam em projetos reais, com conferência na serra.
+- **R-2 Outras marcenarias (beta):** R-1 completo + itens R15 a R32.
+
+Cada item: o quê, por quê e quando está pronto. Os que já têm parte feita dizem o que existe hoje.
+
+### R-1 · A) Corte certo
+
+**R1 Conferência automática de todo plano.** Hoje `conferir()` (`domain/edit.js`) checa limites, sobreposição e peças,
+mas só roda no botão do editor manual. Rodar depois de todo cálculo, ao aprovar e antes de cada exportação (PDF, PNG,
+CSV, etiquetas); se falhar, o plano **não pode ser aprovado** e a tela diz o que está errado.
+*Pronto quando:* um plano adulterado de propósito (peça sobreposta, fora da chapa, faltando) não aprova nem exporta.
+
+**R2 Plano desatualizado não pode ser cortado.** Hoje, se alguém calcula, aprova e depois muda uma peça, o plano antigo
+continua aprovado e exportável. Guardar uma "impressão digital" (hash) do que foi digitado no momento do cálculo;
+se mudar, mostrar "o plano não corresponde mais à lista: calcule de novo", desaprovar e bloquear as exportações.
+*Pronto quando:* mudar uma medida depois de aprovar bloqueia PDF, etiquetas e CSV até recalcular.
+
+**R3 Invariantes do motor em centenas de casos** (teste de propriedade; hoje são 4 casos aleatórios em `core.test.js`).
+Variar serra (0 a 6 mm), refilo, fita descontada, veio, peças livres, fases, sobras do estoque e chapas repetidas.
+Conferir em cada caso: toda peça aparece **exatamente uma vez** e com a medida de corte certa; tudo dentro da área útil
+(descontado o refilo); distância entre peças ≥ espessura da serra; veio respeitado (peça com veio nunca girada);
+cada corte da sequência atravessa a chapa ou a faixa inteira (guilhotina executável); retalho nunca cobre peça.
+*Pronto quando:* 500 casos com semente fixa passam no CI, e uma falha mostra a semente para reproduzir.
+
+**R4 Projetos de referência travados** ("golden tests"): o de 289 peças comparado com o LeoPlan, a planilha do banheiro
+(fonte da verdade dos móveis de casa) e mais 3 projetos reais do Gilmar. Para cada um: número de chapas, aproveitamento
+mínimo e número de cortes máximo. Se uma mudança no motor piorar algum, o teste falha.
+
+**R5 Corte piloto na serra.** Cortar 2 projetos reais seguindo só o que o sistema entrega (PDF de corte e etiquetas).
+Medir pelo menos 10% das peças com trena e paquímetro; tolerância combinada com o Gilmar (ex.: ±0,5 mm). Anotar cada
+divergência e a causa (sistema, digitação, máquina).
+*Pronto quando:* 2 projetos seguidos sem divergência causada pelo sistema.
+
+**R6 Parâmetros da oficina conferidos e impressos.** Espessura real da serra (kerf), refilo, tamanho real da chapa de
+cada fornecedor (2750 × 1840 ou × 1850) e espessura da fita. O PDF de corte e as etiquetas trazem, no rodapé: unidade,
+serra, refilo, tamanho da chapa, data, nome do projeto e versão do app (hoje o PDF não mostra nenhum desses).
+Assim, quem corta confere o que foi usado no cálculo.
+
+**R7 Proteção contra unidade errada.** O erro mais comum de digitação é misturar cm e mm. Avisar quando as medidas
+parecem estar na outra unidade (ex.: em cm, peças acima de 300; em mm, todas abaixo de 30): "Você quis dizer mm?".
+Unidade sempre visível perto das medidas, no PDF e nas etiquetas.
+
+**R8 Medida de corte ou medida final.** Deixar explícito, na tela e no PDF, se as medidas digitadas são finais (com fita)
+ou de corte, e quanto foi descontado de cada peça. Conferir com o método do Gilmar (fita aplicada por nós na montagem).
+
+**R9 Sequência de cortes executável na máquina da oficina.** Validar com o Gilmar se a ordem (fases, direção do primeiro
+corte, giro da chapa) bate com a esquadrejadeira dele. Se não bater, ajustar o motor ou o texto do PDF.
+
+**R10 Impressão real na oficina.** PDF de corte legível impresso em A4 preto e branco (tamanho da letra, números das
+peças, sem depender de cor); etiquetas testadas na impressora e no papel que vão usar, colando na peça e lendo depois
+da fita aplicada. Peça ↔ chapa ↔ projeto identificáveis pela etiqueta.
+
+**R11 Plano aprovado congelado.** Ao aprovar, guardar uma versão do plano (número + data) que não muda mais; qualquer
+alteração gera a versão seguinte. O PDF e as etiquetas mostram o número da versão. Evita cortar metade por uma versão
+e metade por outra.
+
+### R-1 · B) Dados que não se perdem e saber o que aconteceu
+
+**R12 Backup que funciona de verdade.** O aviso de backup já existe (`project/Backup.js`). No piloto: backup semanal
+num lugar fora do computador (Drive) e **um teste de restauração** num navegador limpo. Mesmo sem a nuvem, nenhum projeto se perde.
+
+**R13 Versão do app visível** no rodapé e no PDF (número + data do build, gerado pelo `build.mjs`) e um `CHANGELOG.md`
+curto. Quando um problema aparecer, dá para saber em que versão foi. Saber **voltar uma versão** do site
+(publicar de novo um commit anterior) e ter testado isso uma vez.
+
+**R14 Formato dos dados com versão e migração.** Backup e projeto já têm `versao`. Garantir que todo projeto salvo em
+versões anteriores continua abrindo: guardar backups antigos reais como arquivos de teste (`tests/fixtures/`) e testar
+a leitura deles a cada mudança.
+
+**Critério de pronto do R-1:** R1 a R14 feitos e 2 projetos reais cortados sem divergência (R5).
+
+### R-2 · C) Conta, banco e dados na nuvem
+
+**R15 Parte 9 mínima: dados na nuvem por oficina.** Projetos, sobras, insumos e histórico no Supabase; no primeiro login,
+importar o que está no navegador; fila de gravação quando a internet cai. O convite de membros pode vir logo depois.
+*Pronto quando:* trocar de computador e entrar na conta mostra tudo igual.
+
+**R16 Supabase de produção:** rodar as migrações 001 e 002 (ver "Pendências manuais"); **SMTP próprio** (Resend ou Brevo;
+o padrão manda só 2 e-mails por hora e trava o login por código); CAPTCHA no login; URLs de retorno só do domínio do app;
+modelos de e-mail em português.
+
+**R17 Plano pago do Supabase (Pro) ou backup próprio.** O gratuito pausa o projeto depois de 1 semana sem uso e não
+permite baixar backup. Com dados de marcenaria real: Pro (backup diário por 7 dias) ou exportação diária agendada
+para fora; e **um teste de restauração** ensaiado.
+
+**R18 Homologação separada:** um segundo projeto Supabase para testar; migração nova passa primeiro por lá.
+Nunca testar com os dados das marcenarias.
+
+**R19 Sessão em computador compartilhado** (é comum na oficina): botão "sair de todos os aparelhos", aviso de quem está
+logado e saída automática opcional depois de um tempo sem uso.
+
+### R-2 · D) Regras e privacidade (o mínimo da Parte 11)
+(Orientação técnica, não jurídica: revisar com advogado.)
+
+**R20 Termo de uso do beta:** é uma versão de teste; as medidas devem ser conferidas antes de cortar; o sistema não
+substitui a conferência do marceneiro; como reportar problema. Aceite registrado no primeiro login.
+
+**R21 Política de privacidade curta:** quais dados (conta, projetos, nome e contato de clientes nas propostas),
+onde ficam (Supabase, São Paulo), para quê, por quanto tempo, como pedir exclusão.
+
+**R22 Baixar meus dados e excluir minha conta** dentro do app (o backup já cobre o "baixar").
+
+### R-2 · E) Saber o que acontece nas marcenarias
+
+**R23 Relatar problema:** botão em todas as telas que abre WhatsApp ou formulário com a versão do app e, se a pessoa
+permitir, o projeto anexado. Responder em até 1 dia útil durante o beta.
+
+**R24 Registro de erros:** erros de JavaScript gravados numa tabela do Supabase (mensagem, versão, tela; **sem dados
+pessoais nem do projeto**), com aviso para você quando aparecer erro novo.
+
+**R25 Métricas mínimas de uso** (sem dados pessoais): planos calculados, aprovados e exportados; aproveitamento médio;
+tempo até o primeiro plano; quantos voltaram na semana seguinte.
+
+### R-2 · F) Uso no dia a dia da oficina
+
+**R26 Navegação em páginas** (o redesenho planejado): roteador por hash (`#/montar`, `#/resultado`, `#/estoque`,
+`#/conta`), que funciona no GitHub Pages e no arquivo único e já serve à Parte 9b (`#/serra/<código>`).
+Componentes continuam `{template, mount}` falando pelo `bus`; muda só quem monta cada página. Os e2e acompanham.
+Antes de abrir para terceiros: opinião sobre um layout que ainda vai mudar é feedback desperdiçado.
+
+**R27 Primeiro uso guiado:** projeto de exemplo, 3 passos na tela ("digite as peças → calcule → aprove e baixe"),
+página de ajuda com perguntas comuns e 2 ou 3 vídeos curtos.
+
+**R28 Exportar para serviço de corte:** CSV no formato do CorteCloud (Quantidade, Comprimento, Largura, Função,
+Fita C1/C2/L1/L2, Material, Complemento, Girar; medidas em mm). Os contadores de fita atuais (`fc`/`fl`, 0 a 2) viram
+C1/C2/L1/L2. *Pronto quando:* o arquivo é aceito de verdade na importação do CorteCloud.
+
+**R29 Celular, tablet e computador fraco:** testar num Android barato e num notebook antigo (o cálculo padrão de 15 s
+pode passar de 1 minuto); ajustar o tempo padrão se precisar. Telas usáveis no celular para quem consulta na serra.
+
+**R30 Funciona sem internet (PWA):** instalar como aplicativo e abrir o último plano sem sinal; grava na nuvem quando a
+conexão volta (junto com a fila do R15).
+
+### R-2 · G) Segurança que precisa estar pronta antes de terceiros
+**R31** Parte 10b **S4** (atalhos de teste fora do site público), **S2** (fontes no próprio site), **S6** (sessão) e
+**S8** com a Parte 12 mínima: **domínio próprio** e hospedagem com cabeçalhos de segurança (Cloudflare Pages).
+
+**R32 Ensaio geral:** uma pessoa que nunca viu o sistema (não o Gabriel nem o Gilmar) cria a conta, monta um projeto
+real, exporta e manda para o corte, só com a ajuda do app. Anotar onde travou e corrigir antes de convidar as marcenarias.
+
+**Critério de pronto do R-2:** R15 a R32 feitos e o ensaio geral (R32) sem bloqueio.
+
+**Critério de saída do beta** (quando o sistema deixa de ser "teste"): 5 marcenarias usando, 50 planos cortados de
+verdade, nenhum erro de medida causado pelo sistema, nenhuma perda de dados, erros novos respondidos em até 1 dia útil,
+e cada marcenaria respondeu se pagaria (e quanto).
 
 ---
 
@@ -41,6 +197,7 @@ texto novo na tela passa por `esc()` (o lint cobra).
 - Antes: confirmar com o usuário qual ERP usa e baixar o modelo de importação dele.
 
 ## Parte 9 — Dados na nuvem e oficina compartilhada (fase 21)  [ ]
+(O mínimo desta parte, sem convite de membros, entra no Bloco R como R15.)
 - `infra/persistence.js`: modo `supabase` ao lado de `local` e `claude` (o artefato continua usando o banco do claude.ai).
 - Primeiro login: oferece **importar o que está neste navegador** (reaproveita o pacote do backup).
 - Convite: o dono gera um convite por e-mail para o Gilmar entrar na mesma oficina e ver o mesmo estoque e histórico.
