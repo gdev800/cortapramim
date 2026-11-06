@@ -10,6 +10,7 @@ export default {
     }
     $('btnAprovar').addEventListener('click', () => { state.approved = true; bus.emit('approved'); rolarPara($('exportBox'), 'nearest'); });
     $('btnEditar').addEventListener('click', () => { state.approved = false; bus.emit('approved'); rolarPara($('t-entrada')); });
+    $('btnRecomecar').addEventListener('click', () => ctx.actions.recomecar());
     bus.on('result', render); bus.on('approved', render); bus.on('loaded', render);
   },
 };

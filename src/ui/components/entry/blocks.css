@@ -30,3 +30,11 @@
 .frow { display: grid; grid-template-columns: minmax(0,1fr) 72px 96px 44px; gap: 8px; align-items: center; }
 .frow .del { padding: 0; min-height: 44px; width: 44px; color: var(--err); font-size: 1.15rem; }
 .sobinfo { background: var(--brass-soft); border-radius: 14px; padding: 10px 14px; }
+
+/* janela "Recomeçar?" (usa o visual da janela de conta: dialog.conta) */
+dialog.rec .rec-txt { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+dialog.rec .rec-txt p { margin: 0; line-height: 1.45; }
+dialog.rec .rec-aviso { color: var(--warn); font-weight: 600; }
+dialog.rec .rec-acoes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; justify-content: flex-end; }
+dialog.rec .rec-perigo { background: var(--err); border-color: var(--err); color: #fff; }
+dialog.rec .rec-perigo:hover:not(:disabled) { filter: brightness(1.08); }

@@ -21,6 +21,7 @@ As Partes 1 a 4 trouxeram o **extrato** (o que entrou e saiu, quando e em qual p
 | 8 Login | sim | falta configurar o painel (A-FAZER, "Pendências manuais") |
 | 10a Segurança: fronteira, XSS, CSP, libs, CI | sim (05/11/2026) | o restante da Parte 10 está em A-FAZER |
 | Revisão de código e pastas | sim (05/11/2026) | itens maiores ficaram em A-FAZER, "Melhorias de código" |
+| Extra Recomeçar com confirmação | sim (06/11/2026) | |
 
 ---
 
@@ -163,3 +164,24 @@ Os ataques rodam na versão sem CSP, para medir o escape de verdade. Verificado 
 - Função pura `linhasParaTexto` saiu da infra para `domain/planilha.js` (a infra só lê o arquivo).
 - Imports e variáveis sem uso removidos (lint); `.DS_Store` saiu do repositório; `.gitignore` cobre `.env`, chaves e PDFs.
 - Saída do build renomeada para `dist/cortapramim.html`.
+
+## Extra — Recomeçar com confirmação (06/11/2026)  [x]
+Pedido do Gabriel nos testes: calculou um plano, não gostou e não achou como zerar.
+Analogia: limpar a bancada depois de um serviço. As peças vão embora; a serra continua regulada.
+- **Antes:** o botão "Começar do zero" ficava no fim da lista de peças, apagava tudo num clique, sem perguntar, e também
+  voltava a **unidade para cm e os ajustes da serra ao padrão** (espessura da serra, refilo, tempo), além dos dados da marcenaria
+  na proposta. Quem trabalha em mm com serra de 4 mm recomeçava e calculava com 3,2 mm em cm sem perceber.
+- **Agora:** "Começar do zero" (lista de peças) e um novo **"Recomeçar…"** ao lado de "Aprovar plano" abrem uma janela que diz
+  o que sai (peças, chapas, ferragens, plano, cliente) e o que fica, com duas opções:
+  - **Limpar só o plano**: mantém as peças para ajustar e calcular de novo;
+  - **Limpar tudo**: trabalho novo, mantendo unidade, ajustes do motor, dados da marcenaria e condições padrão da proposta
+    (contato, pagamento, prazo, validade) e a margem. Sobras, insumos, histórico e projetos salvos nunca são tocados.
+  Avisa quando o plano está aprovado, quando há projeto salvo (ele continua na lista) e quando o estoque já foi atualizado
+  (não volta sozinho). Logo depois aparece **"Desfazer"**, que devolve o trabalho, o plano e as marcas de aprovado e de
+  estoque atualizado (sem esta última, "Atualizar estoque" poderia dar baixa duas vezes).
+- O botão **"Novo"** de "Projeto" tinha o mesmo reset antigo. Agora limpa na hora (é usado logo depois de salvar, e a
+  fase 2 conta com isso), mas mantendo o que é da oficina e com o mesmo "Desfazer".
+- **Código:** regra pura em `src/domain/recomecar.js` (`fotoDoZero`, `fotoSemPlano`, `resumoDoTrabalho`, `guardarParaDesfazer`);
+  janela em `src/ui/components/entry/Restart.js` e `restart.html` (texto montado com `textContent`, sem HTML com dado do usuário).
+**Testes:** `tests/unit/fases/recomecar.test.js` (6) e `tests/e2e/fases/recomecar.test.js` (6: cancelar, só o plano + desfazer,
+tudo mantendo a oficina + recarregar a página, trabalho vazio, desfazer com aprovado e estoque atualizado, "Novo" dos projetos).

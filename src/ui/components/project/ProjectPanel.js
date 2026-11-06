@@ -39,7 +39,9 @@ export default {
       await pers.saveProjeto(snap); ctx.save(); bus.emit('projetos');
       ctx.msg('Projeto "' + nome + '" salvo.', 'ok');
     });
-    $('btnNovoProj').addEventListener('click', () => { ctx.load({ blocks: [{}] }); ctx.msg(''); ctx.save(); });
+    // "Novo" (normalmente logo depois de salvar): limpa sem perguntar, mantém unidade, ajustes da serra e dados da marcenaria,
+    // e oferece "Desfazer". Antes voltava a unidade e a serra ao padrão.
+    $('btnNovoProj').addEventListener('click', () => ctx.actions.novoTrabalho());
 
     bus.on('loaded', sync);
     bus.on('storage', notaPadrao);
