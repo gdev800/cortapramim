@@ -10,6 +10,9 @@ texto novo na tela passa por `esc()` (o lint cobra).
 **Para retomar numa sessão nova:** "Leia docs/plano/A-FAZER.md e faça a Parte N".
 
 ## Ordem sugerida
+0. **Parte 13 — Página de apresentação e conta para baixar e salvar** (abaixo): **especificação pronta e validada**
+   em [`specs/parte-13-apresentacao-e-conta.md`](specs/parte-13-apresentacao-e-conta.md). Entra com a conta obrigatória
+   **desligada**; ligar é um passo à parte, depois de R15, R16, R17 e R20 a R22.
 1. **Bloco R — Antes de usar numa marcenaria real** (logo abaixo). Tem duas etapas:
    **R-1, piloto na nossa oficina** (Gabriel e Gilmar cortando projetos reais) e
    **R-2, outras marcenarias usando** (o "beta"). Nada de marcenaria de fora antes de R-1 e R-2 prontos.
@@ -141,7 +144,9 @@ tempo até o primeiro plano; quantos voltaram na semana seguinte.
 
 ### R-2 · F) Uso no dia a dia da oficina
 
-**R26 Navegação em páginas** (o redesenho planejado): roteador por hash (`#/montar`, `#/resultado`, `#/estoque`,
+**R26 Navegação em páginas** (o redesenho planejado). *A Parte 13 já cria o roteador (`src/ui/router.js`) com
+`#/inicio` e `#/app`; aqui `app` se divide nas páginas abaixo (acrescentar em `ROTAS`, `src/domain/rotas.js`).*
+Roteador por hash (`#/montar`, `#/resultado`, `#/estoque`,
 `#/conta`), que funciona no GitHub Pages e no arquivo único e já serve à Parte 9b (`#/serra/<código>`).
 Componentes continuam `{template, mount}` falando pelo `bus`; muda só quem monta cada página. Os e2e acompanham.
 Antes de abrir para terceiros: opinião sobre um layout que ainda vai mudar é feedback desperdiçado.
@@ -184,6 +189,19 @@ e cada marcenaria respondeu se pagaria (e quanto).
       conferir que *Dependabot alerts* está ligado.
 - [ ] GitHub, **Settings > Branches**: proteger a `main` exigindo o job "verificar" verde antes de juntar um PR (opcional, ajuda quando tiver mais gente).
 - [ ] Primeiro push depois desta revisão: acompanhar a aba **Actions** (o CI novo roda e2e, RLS e gitleaks pela primeira vez).
+
+## Parte 13 — Página de apresentação e conta para baixar e salvar (fase 25)  [ ]
+**Especificação completa e validada:** [`specs/parte-13-apresentacao-e-conta.md`](specs/parte-13-apresentacao-e-conta.md),
+com o código testado e o patch [`specs/parte-13.patch`](specs/parte-13.patch) (aplica limpo sobre `b5789d9`).
+- **Site:** a primeira visita abre a página de apresentação (`#/inicio`: o que faz, como funciona, benefícios, prova com
+  projeto real e perguntas frequentes), com "Criar conta grátis", "Entrar" e "Experimentar sem conta". Quem já usou
+  abre direto no app (`#/app`).
+- **Conta obrigatória** para baixar arquivos, salvar projetos e usar o estoque (calcular e aprovar continuam livres).
+  Vem **desligada** (`EXIGIR_CONTA_NO_SITE = false`); ligar é a seção 8 da especificação, depois dos pré-requisitos.
+- **Artefato do claude.ai:** sem mudança.
+**Validação (06/11/2026):** protótipo descartável com a suíte inteira nas condições do CI: 170 unitários e 94 e2e
+(82 antigos + 12 novos), com a conta obrigatória desligada e de novo ligada.
+**Para retomar:** "Leia docs/plano/specs/parte-13-apresentacao-e-conta.md e implemente a Parte 13".
 
 ## Parte 5 — Importar lista de corte do Promob/SketchUp (fase 17)  [ ]
 - Já lemos CSV/XLSX genérico (`infra/xlsx.js`, `linhasParaTexto`). Adicionar reconhecimento das colunas
