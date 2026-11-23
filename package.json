@@ -24,7 +24,7 @@
     "jspdf": "4.2.1",
     "jspdf-autotable": "5.0.9",
     "playwright": "^1.50.0",
-    "read-excel-file": "9.3.14"
+    "read-excel-file": "9.3.20"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.117.2"
